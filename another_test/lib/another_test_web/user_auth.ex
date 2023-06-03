@@ -211,12 +211,29 @@ defmodule AnotherTestWeb.UserAuth do
   def require_authenticated_user(conn, _opts) do
     if conn.assigns[:current_user] do
       conn
+      |> ensure_2fa_setup()
     else
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
       |> redirect(to: ~p"/users/log_in")
       |> halt()
+    end
+  end
+
+  defp ensure_2fa_setup(conn) do
+    if Application.get_env(:another_test, :require_2fa_setup) && conn.assigns[:current_user] do
+      case get_session(conn, :confirm_2fa_setup) do
+        nil ->
+          conn
+          |> put_flash(:info, "You must pass two factor authentication to continue")
+          |> redirect(to: ~p"/users/two_factor")
+          |> halt()
+        _ ->
+          conn
+      end
+    else
+      conn
     end
   end
 

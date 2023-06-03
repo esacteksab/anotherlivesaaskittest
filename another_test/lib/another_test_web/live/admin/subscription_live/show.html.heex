@@ -1,0 +1,46 @@
+<.admin_page_heading title="Subscriptions">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/subscriptions"}>Subscriptions</.link></:link>
+  <:link><.link navigate={~p"/admin/subscriptions/#{@subscription}"}>Subscription</.link></:link>
+</.admin_page_heading>
+
+<div class="flex flex-wrap">
+  <div class="w-full lg:w-2/3 grid grid-cols-1 gap-8">
+    <.card border shadow>
+      <div class="flex items-center justify-between px-4 py-3 border-b border-base-200">
+        <div class="prose">
+          <h3>Show Subscription</h3>
+        </div>
+      </div>
+      <div class="card-body prose">
+        <div>
+          <strong>Cancel at:</strong>
+          <%= @subscription.cancel_at %>
+        </div>
+        <div>
+          <strong>Canceled at:</strong>
+          <%= @subscription.canceled_at %>
+        </div>
+        <div>
+          <strong>Current period end at:</strong>
+          <%= @subscription.current_period_end_at %>
+        </div>
+        <div>
+          <strong>Current period start:</strong>
+          <%= @subscription.current_period_start %>
+        </div>
+        <div>
+          <strong>Status:</strong>
+          <%= @subscription.status %>
+        </div>
+        <div>
+          <strong>Stripe:</strong>
+          <%= @subscription.remote_id %>
+        </div>
+      </div>
+      <div class="border-t card-actions border-base-200">
+        <.link navigate={~p"/admin/subscriptions"} class="btn btn-link">Back</.link>
+      </div>
+    </.card>
+  </div>
+</div>

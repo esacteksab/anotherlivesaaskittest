@@ -113,6 +113,12 @@ defmodule AnotherTest.UsersTest do
       assert is_nil(user.password)
     end
 
+    test "enqueues create customer worker" do
+      email = unique_user_email()
+      {:ok, user} = Users.register_user(valid_user_attributes(email: email))
+
+      assert_enqueued worker: AnotherTest.Billing.CreateCustomerWorker, args: %{id: user.id}
+    end
     test "creates the personal account" do
       email = unique_user_email()
       {:ok, user} = Users.register_user(valid_user_attributes(email: email))
@@ -535,6 +541,89 @@ defmodule AnotherTest.UsersTest do
   describe "inspect/2 for the User module" do
     test "does not include password" do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
+    end
+  end
+
+  describe "generate_user_authenticator_token/1" do
+    setup do
+      %{user: user_fixture()}
+    end
+
+    test "generates a token", %{user: user} do
+      token = Users.generate_user_authenticator_token(user)
+      assert user_token = Repo.get_by(UserToken, token: token)
+      assert user_token.context == "authenticator"
+
+      # Creating the same token for another user should fail
+      assert_raise Ecto.ConstraintError, fn ->
+        Repo.insert!(%UserToken{
+          token: user_token.token,
+          user_id: user_fixture().id,
+          context: "authenticator"
+        })
+      end
+    end
+  end
+
+  describe "get_authenticator_token_for_user/1" do
+    setup do
+      user = user_fixture()
+      token = Users.generate_user_authenticator_token(user)
+
+      %{user: user, token: token}
+    end
+
+    test "when a token exists", %{user: user, token: token} do
+      assert Users.get_authenticator_token_for_user(user) == token
+    end
+
+    test "when token a does not exist for the user" do
+      user = user_fixture()
+      refute Users.get_authenticator_token_for_user(user)
+    end
+  end
+
+  describe "delete_user_authenticator_token/1" do
+    test "deletes the token" do
+      user = user_fixture()
+      _token = Users.generate_user_authenticator_token(user)
+      assert Users.delete_user_authenticator_token(user) == :ok
+      refute Users.get_authenticator_token_for_user(user)
+    end
+  end
+
+  describe "generate_timebased_challenge/1" do
+    test "when a user has a token, its generates a Time-Based One-Time Password" do
+      user = user_fixture()
+      _token = Users.generate_user_authenticator_token(user)
+
+      assert "" <> _ = Users.generate_timebased_challenge(user)
+    end
+
+    test "when a user dont have a token, it creates one and generates a Time-Based One-Time Password" do
+      user = user_fixture()
+
+      assert "" <> _ = Users.generate_timebased_challenge(user)
+      assert Users.get_authenticator_token_for_user(user)
+    end
+  end
+
+  describe "generate_authenticator_url/1" do
+    test "generates a token if it does not exists and an authenticator url" do
+      user = user_fixture()
+
+      assert "otpauth://totp/" <> authenticator_url = Users.generate_authenticator_url(user)
+      assert authenticator_url =~ user.email
+    end
+  end
+
+  describe "verify_timebased_challenge/2" do
+    test "returns true when the time based challenge is valid" do
+      user = user_fixture()
+      time_based_challenge = Users.generate_timebased_challenge(user)
+
+      assert Users.verify_timebased_challenge(user, time_based_challenge) == true
+      assert Users.verify_timebased_challenge(user, "000000") == false
     end
   end
 end

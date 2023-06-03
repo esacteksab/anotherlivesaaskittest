@@ -1,0 +1,50 @@
+<.modal
+  :if={@live_action in [:edit]}
+  id="account-modal"
+  show
+  on_cancel={JS.navigate(~p"/admin/accounts/#{@account}")}
+>
+  <:title><%= @page_title %></:title>
+  <.live_component
+    module={AnotherTestWeb.Admin.AccountLive.FormComponent}
+    id={@account.id}
+    title={@page_title}
+    action={@live_action}
+    account={@account}
+    navigate={~p"/admin/accounts/#{@account}"}
+  />
+</.modal>
+
+<.admin_page_heading title="Show Account">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/accounts"}>Accounts</.link></:link>
+  <:link><.link navigate={~p"/admin/accounts/#{@account}"}><%= @account.name %></.link></:link>
+</.admin_page_heading>
+
+<div class="flex flex-wrap">
+  <div class="w-full lg:w-2/3 grid grid-cols-1 gap-8">
+    <.card border shadow>
+      <.list>
+        <:item title="Name"><%= @account.name %></:item>
+      </.list>
+
+      <div class="text-sm border-t mt-2 pt-2 border-gray-200 dark:border-gray-800">
+        <.link patch={~p"/admin/accounts/#{@account}/show/edit"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</.link>
+        <.link navigate={~p"/admin/accounts"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Back</.link>
+      </div>
+    </.card>
+
+    <.card border shadow>
+      <.table id="members" rows={@memberships}>
+        <:col :let={membership} label="Account">
+          <%= membership.member.email %>
+        </:col>
+        <:col :let={membership} label="Role">
+          <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+            <%= String.capitalize("#{membership.role}") %>
+          </span>
+        </:col>
+      </.table>
+    </.card>
+  </div>
+</div>

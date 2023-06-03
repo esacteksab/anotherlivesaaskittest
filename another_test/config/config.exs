@@ -66,6 +66,16 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :another_test, AnotherTest.Users.Guardian,
+  issuer: "another_test",
+  secret_key: System.get_env("GUARDIAN_SECRET_KEY_ADMINS") || "pY5QjCTqIl5N0Gc6pxyJIAKNwfT9ziJVVGyoAhdqvTCN/KIESs9dey3psBzx8VXN"
+
+
+config :another_test, AnotherTest.Admins.Guardian,
+  issuer: "another_test",
+  secret_key: System.get_env("GUARDIAN_SECRET_KEY_ADMINS") || "Wnd9RUfiorxOt8tYdrl7JMp9KC7yYTimRTByJLwhveWp5vSVOeL2yH/94RYmLzbz"
+
+
 # This implements Ueberauth with the Github Strategy.
 # There are other strategies like Twitter, Google, Apple and Facebook.
 # Read more in the Ueberauth docs.
@@ -86,12 +96,40 @@ config :another_test, Oban,
     {Oban.Plugins.Pruner, max_age: (3600 * 24)},
     {Oban.Plugins.Cron,
       crontab: [
+        {"@reboot", AnotherTest.OneOffs.RunOneOffsWorker},
+        {"0 9 * * *", AnotherTest.Campaigns.ExecuteStepWorker},
+        {"0 8 * * *", AnotherTest.DailyReports.DailyReportWorker},
        # {"0 2 * * *", AnotherTest.Workers.DailyDigestWorker},
        # {"@reboot", AnotherTest.Workers.StripeSyncWorker},
        # {"0 2 * * *", AnotherTest.DailyReports.DailyReportWorker},
      ]}
   ]
 
+config :flop, repo: AnotherTest.Repo
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_SECRET"),
+  public_key: System.get_env("STRIPE_PUBLIC"),
+  webhook_signing_key: System.get_env("STRIPE_WEBHOOK_SIGNING_KEY")
+
+
+config :fun_with_flags, :persistence,
+  adapter: FunWithFlags.Store.Persistent.Ecto,
+  repo: AnotherTest.Repo
+
+config :fun_with_flags, :cache_bust_notifications,
+  enabled: true,
+  adapter: FunWithFlags.Notifications.PhoenixPubSub,
+  client: AnotherTest.PubSub
+
+config :waffle,
+  storage: Waffle.Storage.S3, # or Waffle.Storage.Local
+  bucket: System.get_env("AWS_BUCKET") # if using S3
+
+config :ex_aws,
+  json_codec: Jason,
+  access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
+  secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
+  region: System.get_env("AWS_REGION")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

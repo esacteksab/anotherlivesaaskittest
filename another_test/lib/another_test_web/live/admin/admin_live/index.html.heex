@@ -1,0 +1,41 @@
+<.admin_page_heading title="Admins">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/admins"}>Admins</.link></:link>
+
+  <.button phx-click={JS.patch(~p"/admin/admins/new")}>New Admin</.button>
+</.admin_page_heading>
+
+<.live_table id="admins" items={@admins} meta={@meta} path={~p"/admin/admins"} row_click={&JS.navigate(~p"/admin/admins/#{&1}")}>
+  <:col :let={admin} label="Name" field={:name}><%= admin.name %></:col>
+  <:col :let={admin} label="Email" field={:email}><%= admin.email %></:col>
+  <:action :let={admin}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/admins/#{admin}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/admins/#{admin}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={admin}>
+    <.link phx-click={JS.push("delete", value: %{id: admin.id})} data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.live_table>
+
+<.pagination meta={@meta} path={~p"/admin/users"} />
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="admin-modal"
+  show
+  on_cancel={JS.navigate(~p"/admin/admins")}
+>
+  <:title><%= @page_title %></:title>
+  <.live_component
+    module={AnotherTestWeb.Admin.AdminsLive.FormComponent}
+    id={@admin.id || :new}
+    title={@page_title}
+    action={@live_action}
+    admin={@admin}
+    navigate={~p"/admin/admins"}
+  />
+</.modal>

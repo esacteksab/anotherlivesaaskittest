@@ -1,0 +1,120 @@
+<script src="https://js.stripe.com/v3/"></script>
+
+<div class="bg-base-100">
+  <div class="container px-6 py-8 mx-auto">
+
+    <%= if @stripe_not_setup  do %>
+      <div class="mb-8 shadow-lg alert alert-warning">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          <span>Stripe is not setup yet</span>
+        </div>
+      </div>
+    <% end %>
+
+    <p class="text-xl text-center text-base-content text-opacity-70">
+      Choose your plan
+    </p>
+
+    <h1 class="mt-4 text-3xl font-semibold text-center capitalize text-base-content text-opacity-90 lg:text-4xl">Pricing Plan</h1>
+
+    <div class="mt-6 space-y-8 xl:mt-12">
+
+      <%= for %{product: product} = plan <- @plans do %>
+        <div phx-click="choose-plan" phx-value-id={plan.id}
+             class={"flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border cursor-pointer rounded-xl #{if chosen?(plan, @chosen_plan_id), do: "border-primary", else: "border-base-content border-opacity-20"}"}>
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class={"w-5 h-5 #{if chosen?(plan, @chosen_plan_id), do: "text-primary", else: "text-base-content text-opacity-70"} sm:h-9 sm:w-9"} viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+
+            <div class="flex flex-col items-center mx-5 space-y-1">
+              <h2 class="text-lg font-medium text-base-content sm:text-2xl"><%= product.name %></h2>
+              <span class="badge badge-info">
+                Save 20%
+              </span>
+            </div>
+          </div>
+
+          <h2 class={"text-2xl font-semibold sm:text-4xl #{if chosen?(plan, @chosen_plan_id), do: "text-primary", else: "text-base-content text-opacity-70"}"}>
+            <%= format_price(plan.amount) %> <span class="text-base font-medium">/Month</span>
+          </h2>
+        </div>
+      <% end %>
+
+      <%= if @chosen_plan_id do %>
+        <div class="flex justify-center">
+          <button id="start-checkout" phx-click="checkout" phx-hook="InitStripeCheckout" class="btn btn-primary" data-public-key={Application.get_env(:stripity_stripe, :public_key)} >
+            Start Subscription
+          </button>
+        </div>
+      <% else %>
+        <div class="flex justify-center">
+          <button disabled="disabled" class="btn btn-primary">
+            Pick Plan To Start Subscription
+          </button>
+        </div>
+      <% end %>
+
+      <div class="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border cursor-pointer rounded-xl border-base-content border-opacity-20">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-base-content text-opacity-70 sm:h-9 sm:w-9" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+
+          <div class="flex flex-col items-center mx-5 space-y-1">
+            <h2 class="text-lg font-medium text-base-content sm:text-2xl">Basic</h2>
+            <span class="badge badge-info">
+              Save 20%
+            </span>
+          </div>
+        </div>
+
+        <h2 class="text-2xl font-semibold sm:text-4xl text-base-content text-opacity-70">$49 <span class="text-base font-medium">/Month</span></h2>
+      </div>
+
+      <div class="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border cursor-pointer border-primary rounded-xl">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary sm:h-9 sm:w-9" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+
+          <div class="flex flex-col items-center mx-5 space-y-1">
+            <h2 class="text-lg font-medium text-base-content sm:text-2xl">Popular</h2>
+            <span class="badge badge-info">
+              Save 20%
+            </span>
+          </div>
+        </div>
+
+        <h2 class="text-2xl font-semibold text-primary sm:text-4xl">$99 <span class="text-base font-medium">/Month</span></h2>
+      </div>
+
+      <div class="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border cursor-pointer rounded-xl border-base-content border-opacity-20">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-base-content text-opacity-70 sm:h-9 sm:w-9" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+
+          <div class="flex flex-col items-center mx-5 space-y-1">
+            <h2 class="text-lg font-medium text-base-content sm:text-2xl">Enterprise</h2>
+            <span class="badge badge-info">
+              Save 20%
+            </span>
+          </div>
+        </div>
+
+        <h2 class="text-2xl font-semibold sm:text-4xl text-base-content text-opacity-70">$149 <span class="text-base font-medium">/Month</span></h2>
+      </div>
+
+      <div class="flex justify-center">
+        <button class="btn btn-primary">
+          Start Subscription
+        </button>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>

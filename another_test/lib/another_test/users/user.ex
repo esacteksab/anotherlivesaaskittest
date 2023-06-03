@@ -4,6 +4,12 @@ defmodule AnotherTest.Users.User do
   import Ecto.Changeset
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {
+    Flop.Schema,
+    default_limit: 20,
+    filterable: [:email, :confirmed_at,  :inserted_at],
+    sortable: [:email, :confirmed_at, :inserted_at]
+  }
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true, redact: true

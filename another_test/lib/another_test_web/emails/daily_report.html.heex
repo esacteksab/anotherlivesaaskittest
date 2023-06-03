@@ -1,0 +1,20 @@
+<h2 class="aligncenter">
+  Daily Report
+</h2>
+
+<p>This is reported to have happened yesterday</p>
+
+<table>
+  <tr>
+    <th>Table</th>
+    <th>Field</th>
+    <th>Count</th>
+  </tr>
+  <%= for {table, field, count} <- @metrics do %>
+    <tr>
+      <th><%= table %></th>
+      <th><%= field %></th>
+      <th><%= count %></th>
+    </tr>
+  <% end %>
+</table>

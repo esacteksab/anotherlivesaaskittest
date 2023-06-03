@@ -5,6 +5,12 @@ defmodule AnotherTest.Accounts.Account do
   use AnotherTest.Schema
   import Ecto.Changeset
 
+  @derive {
+    Flop.Schema,
+    default_limit: 20,
+    filterable: [:name],
+    sortable: [:name]
+  }
   schema "accounts" do
     field :name, :string
     field :personal, :boolean, default: false

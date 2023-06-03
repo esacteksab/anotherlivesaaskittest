@@ -1,0 +1,33 @@
+<.admin_page_heading title="Accounts">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/accounts"}>Accounts</.link></:link>
+</.admin_page_heading>
+
+<.filter_form meta={@meta} fields={[name: [op: :ilike_and]]} />
+
+<.live_table id="accounts" items={@accounts} meta={@meta} path={~p"/admin/accounts"}>
+  <:col :let={account} label="Name" field={:name}><%= account.name %></:col>
+  <:col :let={account} label="Created" field={:inserted_at}><%= Calendar.strftime account.inserted_at, "%x" %></:col>
+  <:action :let={account}>
+    <.link navigate={~p"/admin/accounts/#{account}"} class="link link-primary">Show</.link>
+  </:action>
+</.live_table>
+
+<.pagination meta={@meta} path={~p"/admin/accounts"} />
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="account-modal"
+  show
+  on_cancel={JS.navigate(~p"/admin/accounts")}
+>
+  <:title><%= @page_title %></:title>
+  <.live_component
+    module={AnotherTestWeb.Admin.AccountLive.FormComponent}
+    id={@account.id || :new}
+    title={@page_title}
+    action={@live_action}
+    account={@account}
+    navigate={~p"/admin/accounts"}
+  />
+</.modal>

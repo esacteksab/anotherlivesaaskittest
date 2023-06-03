@@ -1,0 +1,19 @@
+<.admin_page_heading title="Users">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/users"}>Users</.link></:link>
+</.admin_page_heading>
+
+<.filter_form meta={@meta} fields={[email: [op: :ilike_and]]} />
+
+<.live_table id="users" items={@users} meta={@meta} path={~p"/admin/users"}>
+  <:col :let={user} label="Email" field={:email}><%= user.email %></:col>
+  <:col :let={user} label="Signed up" field={:inserted_at}><%= Calendar.strftime user.inserted_at, "%x" %></:col>
+  <:col :let={user} label="Impersonate">
+    <.link href={~p"/admin/impersonate/#{user.id}"} method="post" class="link link-primary">Impersonate</.link>
+  </:col>
+  <:action :let={user}>
+    <.link navigate={~p"/admin/users/#{user}"} class="link link-primary">Show</.link>
+  </:action>
+</.live_table>
+
+<.pagination meta={@meta} path={~p"/admin/users"} />

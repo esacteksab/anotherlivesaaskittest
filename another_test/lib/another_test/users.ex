@@ -10,6 +10,10 @@ defmodule AnotherTest.Users do
 
   ## Database getters
 
+  def paginate_users(params \\ %{}) do
+    Flop.validate_and_run(User, params, for: User)
+  end
+
   @doc """
   Gets a user by email.
 
@@ -141,6 +145,7 @@ defmodule AnotherTest.Users do
     |> User.registration_changeset(attrs)
     |> Repo.insert()
     |> create_personal_account()
+    |> maybe_create_billing_customer()
   end
 
   defp create_personal_account({:ok, user} = result) do
@@ -155,6 +160,16 @@ defmodule AnotherTest.Users do
   end
 
   defp create_personal_account(result), do: result
+
+  defp maybe_create_billing_customer({:ok, user} = result) do
+    %{id: user.id}
+    |> Oban.Job.new(queue: :default, worker: AnotherTest.Billing.CreateCustomerWorker)
+    |> Oban.insert()
+
+    result
+  end
+
+  defp maybe_create_billing_customer(result), do: result
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
@@ -425,5 +440,75 @@ defmodule AnotherTest.Users do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  ## Two factor authentication with authenticator
+
+  @doc """
+  Generates a session token.
+  """
+  def generate_user_authenticator_token(user) do
+    {token, user_token} = UserToken.build_authenticator_token(user)
+    Repo.insert!(user_token)
+    token
+  end
+
+  @doc """
+  Gets the authenticator token for a given user.
+  Returns nil if it does not exist.
+  """
+  def get_authenticator_token_for_user(user) do
+    query =
+      UserToken.find_authenticator_token_query(user)
+      |> limit(1)
+
+    Repo.one(query)
+  end
+
+  @doc """
+  Deletes the authenticator tokens for a given user.
+  """
+  def delete_user_authenticator_token(user) do
+    Repo.delete_all(from UserToken, where: [context: "authenticator", user_id: ^user.id])
+    :ok
+  end
+
+  @doc """
+  Returns a timebased password that can be verified with verify_timebased_challenge/2.
+  If a token does not exist for the user, it will also create it.
+  This is designed to be used with a SMS-based 2FA solution.
+  """
+  def generate_timebased_challenge(user) do
+    token =
+      case get_authenticator_token_for_user(user) do
+        nil -> generate_user_authenticator_token(user)
+        token -> token
+      end
+
+    NimbleTOTP.verification_code(token)
+  end
+
+  @doc """
+  Generates an authenticator link for use with for example Google Authenticator.
+  This link can in turn be generated as a QR code that the user can use.
+  """
+  def generate_authenticator_url(user) do
+    token =
+      case get_authenticator_token_for_user(user) do
+        nil -> generate_user_authenticator_token(user)
+        token -> token
+      end
+
+    issuer = Application.get_env(:core_spunk, :app_name, "MyApp")
+    NimbleTOTP.otpauth_uri("#{issuer}:#{user.email}", token, issuer: issuer)
+  end
+
+  @doc """
+  Verifies a time based one time password for a specific user.
+  Returns either true or false.
+  """
+  def verify_timebased_challenge(user, "" <> challenge) do
+    token = get_authenticator_token_for_user(user)
+    token && NimbleTOTP.valid?(token, challenge)
   end
 end

@@ -179,4 +179,25 @@ defmodule AnotherTest.Users.UserToken do
   def user_and_contexts_query(user, [_ | _] = contexts) do
     from t in UserToken, where: t.user_id == ^user.id and t.context in ^contexts
   end
+
+  @doc """
+  Generates a NimbleTOTP secret for UserToken that is later used in
+  combination with either generating or verifying time based one time
+  passwords.
+  """
+  def build_authenticator_token(user) do
+    token = NimbleTOTP.secret()
+    {token, %UserToken{token: token, context: "authenticator", user_id: user.id}}
+  end
+
+  @doc """
+  Query for finding the last authenticator token for a specific user.
+  Most likely, it should only be one.
+  """
+  def find_authenticator_token_query(user) do
+    from user_token in UserToken,
+      where: [context: "authenticator", user_id: ^user.id],
+      order_by: [desc: :inserted_at],
+      select: user_token.token
+  end
 end

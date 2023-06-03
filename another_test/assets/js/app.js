@@ -21,6 +21,8 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import {InitStripeCheckout} from "./init_stripe_checkout"
+import {InitChart} from "./init_chart"
 
 // Uncomment if you use alpinejs
 // import Alpine from "alpinejs"
@@ -28,6 +30,8 @@ import topbar from "../vendor/topbar"
 // Alpine.start()
 
 let Hooks = {}
+Hooks.InitStripeCheckout = InitStripeCheckout
+Hooks.InitChart = InitChart
 Hooks.Focus = {
   mounted() {
     this.el.focus()
@@ -60,4 +64,14 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+window.addEventListener("layout:toggle-sidebar", event => {
+  const sidebar = document.querySelector('#sidebar')
+
+  if (sidebar.classList.contains("hidden")) {
+    liveSocket.execJS(sidebar, sidebar.getAttribute("data-show"))
+  } else {
+    liveSocket.execJS(sidebar, sidebar.getAttribute("data-hide"))
+  }
+})
 

@@ -1,0 +1,24 @@
+<.admin_page_heading title="Subscriptions">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/subscriptions"}>Subscriptions</.link></:link>
+</.admin_page_heading>
+
+<.filter_form meta={@meta} fields={[status: [op: :ilike_and], remote_id: [op: :ilike_and]]} />
+
+<.live_table id="subscriptions" items={@subscriptions} meta={@meta} path={~p"/admin/subscriptions"} row_click={&JS.navigate(~p"/admin/subscriptions/#{&1}")}>
+  <:col :let={subscription} label="Created" field={:inserted_at}><%= human_date subscription.inserted_at %></:col>
+  <:col :let={subscription} label="Current period start" field={:current_period_start}><%= human_date subscription.current_period_start %></:col>
+  <:col :let={subscription} label="Current period end at" field={:current_period_end_at}><%= human_date subscription.current_period_end_at %></:col>
+  <:col :let={subscription} label="Cancel at" field={:cancel_at}><%= human_date subscription.cancel_at %></:col>
+  <:col :let={subscription} label="Canceled at" field={:canceled_at}><%= human_date subscription.canceled_at %></:col>
+  <:col :let={subscription} label="Status" field={:status}><%= subscription.status %></:col>
+  <:col :let={subscription} label="Remote Id" field={:remote_id}><%= subscription.remote_id %></:col>
+
+  <:action :let={subscription}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/subscriptions/#{subscription}"}>Show</.link>
+    </div>
+  </:action>
+</.live_table>
+
+<.pagination meta={@meta} path={~p"/admin/subscriptions"} />

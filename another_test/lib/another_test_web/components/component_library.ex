@@ -3,6 +3,9 @@ defmodule AnotherTestWeb.ComponentLibrary do
     quote do
       import AnotherTestWeb.ComponentLibrary
       # Import additional component modules below
+      import AnotherTestWeb.Components.Admin
+      import AnotherTestWeb.Components.Cards
+      import AnotherTestWeb.Components.Tables
 
     end
   end

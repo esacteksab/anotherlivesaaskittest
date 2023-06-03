@@ -1,0 +1,39 @@
+<.admin_page_heading title="Admins">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/admins"}>Admins</.link></:link>
+  <:link><.link navigate={~p"/admin/admins/#{@admin}"}>Admin</.link></:link>
+</.admin_page_heading>
+
+<div class="flex flex-wrap">
+  <div class="w-full lg:w-2/3 grid grid-cols-1 gap-8">
+    <.card border shadow>
+      <.list>
+        <:item title="Name"><%= @admin.name %></:item>
+        <:item title="Email"><%= @admin.email %></:item>
+        <:item title="Signed up"><%= Calendar.strftime @admin.inserted_at, "%x" %></:item>
+      </.list>
+
+      <div class="text-sm border-t mt-2 pt-2 border-gray-200 dark:border-gray-800">
+        <.link patch={~p"/admin/admins/#{@admin}/show/edit"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</.link>
+        <.link navigate={~p"/admin/admins"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Back</.link>
+      </div>
+    </.card>
+  </div>
+</div>
+
+<.modal
+  :if={@live_action in [:edit]}
+  id="admin-modal"
+  show
+  on_cancel={JS.navigate(~p"/admin/admins/#{@admin}")}
+>
+  <:title><%= @page_title %></:title>
+  <.live_component
+    module={AnotherTestWeb.Admin.AdminsLive.FormComponent}
+    id={@admin.id || :new}
+    title={@page_title}
+    action={@live_action}
+    admin={@admin}
+    navigate={~p"/admin/admins/#{@admin}"}
+  />
+</.modal>

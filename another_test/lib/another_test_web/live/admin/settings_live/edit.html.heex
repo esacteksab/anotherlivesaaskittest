@@ -1,0 +1,27 @@
+<.admin_page_heading title="Settings">
+  <:link><.link navigate={~p"/admin"}>Dashboard</.link></:link>
+  <:link><.link navigate={~p"/admin/settings"}>Settings</.link></:link>
+</.admin_page_heading>
+
+<div class="flex flex-wrap">
+  <div class="w-full md:w-2/3">
+
+    <.card shadow border>
+      <div class="flex items-center justify-between px-4 py-3 border-b border-base-200">
+        <div class="prose">
+          <h3>Update your settings</h3>
+        </div>
+      </div>
+      <div class="card-body">
+        <.live_component
+          module={AnotherTestWeb.Admin.SettingLive.FormComponent}
+          id="settings-form"
+          admin={@admin}
+          navigate={~p"/admin/settings"}
+        />
+      </div>
+      <div class="border-t card-actions border-base-200">
+      </div>
+    </.card>
+  </div>
+</div>

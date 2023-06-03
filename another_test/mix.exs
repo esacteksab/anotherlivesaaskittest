@@ -33,6 +33,26 @@ defmodule AnotherTest.MixProject do
   defp deps do
     [
       # ADDITIONAL PACKAGES
+      {:absinthe, "~> 1.7.1"},
+      {:absinthe_plug, "~> 1.5.8"},
+      {:cachex, "~> 3.6.0"},
+      {:eqrcode, "~> 0.1.10"},
+      {:nimble_totp, "~> 1.0.0"},
+      {:wallaby, "~> 0.30.3", runtime: false, only: :test},
+      {:waffle, "~> 1.1.7"},
+      {:waffle_ecto, "~> 0.0.12"},
+
+      # If using S3:
+      {:ex_aws, "~> 2.4.2"},
+      {:ex_aws_s3, "~> 2.4.0"},
+      {:hackney, "~> 1.18.1"},
+      {:sweet_xml, "~> 0.7.3"},
+      {:fun_with_flags, "~> 1.10.1"},
+      {:fun_with_flags_ui, "~> 0.8.1"},
+      {:stripity_stripe, "~> 2.17.3"},
+      {:flop, "~> 0.20.1"},
+      {:flop_phoenix, "~> 0.19.0"},
+      {:guardian, "~> 2.3.1"},
       {:ueberauth, "~> 0.10.5"},
       {:ueberauth_github, "~> 0.8.3"},
       {:premailex, "~> 0.3.18"},

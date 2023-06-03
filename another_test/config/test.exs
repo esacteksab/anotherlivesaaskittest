@@ -23,7 +23,7 @@ config :another_test, AnotherTest.Repo,
 config :another_test, AnotherTestWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "y0dI0FW+Wn/TldkrToSeo+YZlgEqEoymb+RcGOXHeKuVGmYwVKFlfIBw/A2FT+I9",
-  server: false
+  server: true
 
 # In test we don't send emails.
 config :another_test, AnotherTest.Mailer, adapter: Swoosh.Adapters.Test

@@ -11,6 +11,10 @@ defmodule AnotherTest.Accounts do
   alias AnotherTest.Accounts.Member
   alias AnotherTest.Accounts.Invitation
 
+  def paginate_accounts(params \\ %{}) do
+    Flop.validate_and_run(Account, params, for: Account)
+  end
+
   @doc """
   Returns the list of accounts.
 

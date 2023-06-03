@@ -1,0 +1,82 @@
+<div class="mb-8 prose">
+  <h1>Billing</h1>
+</div>
+
+<div class="mb-8 border card">
+  <div class="card-body">
+    <h2 class="card-title">Manage Subscription</h2>
+    <%= if @billing_customer.card_last4 do %>
+      <div class="flex items-center mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <span class="block px-3">•••• •••• •••• <%= @billing_customer.card_last4 %></span>
+        <span class="block px-3"><%= @billing_customer.card_exp_month %> / <%= @billing_customer.card_exp_year %></span>
+      </div>
+    <% end %>
+
+    <%= if is_nil(@billing_customer.remote_id) do %>
+      <div class="shadow-lg alert alert-warning">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          <span>Warning: Billing customer is not setup.</span>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="pt-8">
+      <.form for={%{}} as={:nothing} method="POST" action={~p"/billing"}>
+      <button type="submit" class="btn btn-primary">Manage billing</button>
+      </.form>
+    </div>
+  </div>
+</div>
+
+<div class="mb-4 prose">
+  <h2>Invoice History</h2>
+</div>
+<div class="mb-8 border card">
+  <table class="table w-full">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th colspan="2">PDF</th>
+      </tr>
+    </thead>
+    <tbody id="invoices">
+      <%= for invoice <- @invoices do %>
+        <tr id={"invoice-#{invoice.id}"}>
+          <td><%= Calendar.strftime invoice.inserted_at, "%x" %></td>
+          <td></td>
+          <td>
+            <%= if invoice.status == "paid" do %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <%= invoice.status %>
+              </span>
+            <% else %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <%= invoice.status %>
+              </span>
+            <% end %>
+          </td>
+          <td>
+            <.link href={"#{invoice.hosted_invoice_url}"} target="_blank">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </.link>
+          </td>
+          <td>
+            <.link href={"#{invoice.invoice_pdf}"}>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </.link>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

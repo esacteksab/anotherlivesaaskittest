@@ -20,7 +20,10 @@ defmodule AnotherTest.Application do
       AnotherTestWeb.Endpoint,
       # Start a worker by calling: AnotherTest.Worker.start_link(arg)
       # {AnotherTest.Worker, arg}
+      webhook_processor_service(),
       {Oban, oban_config()},
+      {Cachex, name: :general_cache}, # You can add additional caches with different names
+
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -39,5 +42,12 @@ defmodule AnotherTest.Application do
 
   defp oban_config do
     Application.fetch_env!(:another_test, Oban)
+  end
+
+  # Dont start the genserver in test mode
+  defp webhook_processor_service do
+    if Application.get_env(:another_test, :env) == :test,
+      do: AnotherTest.Billing.Stripe.WebhookProcessor.Stub,
+      else: AnotherTest.Billing.Stripe.WebhookProcessor
   end
 end
