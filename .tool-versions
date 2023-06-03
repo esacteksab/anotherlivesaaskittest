@@ -1,0 +1,5 @@
+elixir 1.14.3
+erlang 24.3.4.8
+nodejs 18.16.0
+pre-commit 3.3.2
+python 3.11.2
