@@ -32,6 +32,16 @@ defmodule AnotherTest.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # ADDITIONAL PACKAGES
+      {:ueberauth, "~> 0.10.5"},
+      {:ueberauth_github, "~> 0.8.3"},
+      {:premailex, "~> 0.3.18"},
+      {:oban, "~> 2.15.1"},
+      {:bcrypt_elixir, "~> 3.0"},
+      {:credo, "~> 1.7.0", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.12.2", only: [:dev, :test], runtime: false},
+
+      # DEFAULT PACKAGES
       {:phoenix, "~> 1.7.2"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
@@ -39,7 +49,7 @@ defmodule AnotherTest.MixProject do
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.18.16"},
-      {:floki, ">= 0.30.0", only: :test},
+      {:floki, ">= 0.30.0"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
@@ -49,7 +59,8 @@ defmodule AnotherTest.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:saas_kit, "1.0.0", only: :dev},
     ]
   end
 

@@ -85,6 +85,7 @@ defmodule AnotherTestWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import AnotherTestWeb.CoreComponents
+      use AnotherTestWeb.ComponentLibrary
       import AnotherTestWeb.Gettext
 
       # Shortcut for generating JS commands

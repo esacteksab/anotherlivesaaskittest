@@ -7,8 +7,15 @@
 # General application configuration
 import Config
 
+config :another_test, :env, Mix.env()
+
 config :another_test,
-  ecto_repos: [AnotherTest.Repo]
+  ecto_repos: [AnotherTest.Repo],
+  generators: [binary_id: true]
+
+config :another_test, AnotherTest.Repo,
+  migration_primary_key: [name: :id, type: :binary_id]
+
 
 # Configures the endpoint
 config :another_test, AnotherTestWeb.Endpoint,
@@ -58,6 +65,33 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+# This implements Ueberauth with the Github Strategy.
+# There are other strategies like Twitter, Google, Apple and Facebook.
+# Read more in the Ueberauth docs.
+config :ueberauth, Ueberauth,
+  providers: [
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email"]}
+  ]
+
+config :ueberauth, Ueberauth.Strategy.Github.OAuth,
+  client_id: System.get_env("GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+
+
+config :another_test, Oban,
+  repo: AnotherTest.Repo,
+  queues: [default: 10, mailers: 20, high: 50, low: 5],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: (3600 * 24)},
+    {Oban.Plugins.Cron,
+      crontab: [
+       # {"0 2 * * *", AnotherTest.Workers.DailyDigestWorker},
+       # {"@reboot", AnotherTest.Workers.StripeSyncWorker},
+       # {"0 2 * * *", AnotherTest.DailyReports.DailyReportWorker},
+     ]}
+  ]
+
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

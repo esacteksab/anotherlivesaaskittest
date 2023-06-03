@@ -18,6 +18,8 @@ defmodule AnotherTest.DataCase do
 
   using do
     quote do
+      use Oban.Testing, repo: AnotherTest.Repo
+
       alias AnotherTest.Repo
 
       import Ecto

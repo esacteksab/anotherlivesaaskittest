@@ -17,9 +17,10 @@ defmodule AnotherTest.Application do
       # Start Finch
       {Finch, name: AnotherTest.Finch},
       # Start the Endpoint (http/https)
-      AnotherTestWeb.Endpoint
+      AnotherTestWeb.Endpoint,
       # Start a worker by calling: AnotherTest.Worker.start_link(arg)
       # {AnotherTest.Worker, arg}
+      {Oban, oban_config()},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -34,5 +35,9 @@ defmodule AnotherTest.Application do
   def config_change(changed, _new, removed) do
     AnotherTestWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp oban_config do
+    Application.fetch_env!(:another_test, Oban)
   end
 end

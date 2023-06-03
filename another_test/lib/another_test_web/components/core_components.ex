@@ -2,15 +2,9 @@ defmodule AnotherTestWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
-  At the first glance, this module may seem daunting, but its goal is
-  to provide some core building blocks in your application, such modals,
-  tables, and forms. The components are mostly markup and well documented
-  with doc strings and declarative assigns. You may customize and style
-  them in any way you want, based on your application growth and needs.
-
-  The default components use Tailwind CSS, a utility-first CSS framework.
-  See the [Tailwind CSS documentation](https://tailwindcss.com) to learn
-  how to customize them or feel free to swap in another framework altogether.
+  The components in this module use Tailwind CSS, a utility-first CSS framework.
+  See the [Tailwind CSS documentation](https://tailwindcss.com) to learn how to
+  customize the generated components in this module.
 
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
@@ -25,21 +19,30 @@ defmodule AnotherTestWeb.CoreComponents do
   ## Examples
 
       <.modal id="confirm-modal">
-        This is a modal.
+        Are you sure?
+        <:confirm>OK</:confirm>
+        <:cancel>Cancel</:cancel>
       </.modal>
 
-  JS commands may be passed to the `:on_cancel` to configure
-  the closing/cancel event, for example:
+  JS commands may be passed to the `:on_cancel` and `on_confirm` attributes
+  for the caller to react to each button press, for example:
 
-      <.modal id="confirm" on_cancel={JS.navigate(~p"/posts")}>
-        This is another modal.
+      <.modal id="confirm" on_confirm={JS.push("delete")} on_cancel={JS.navigate(~p"/posts")}>
+        Are you sure you?
+        <:confirm>OK</:confirm>
+        <:cancel>Cancel</:cancel>
       </.modal>
-
   """
   attr :id, :string, required: true
   attr :show, :boolean, default: false
   attr :on_cancel, JS, default: %JS{}
+  attr :on_confirm, JS, default: %JS{}
+
   slot :inner_block, required: true
+  slot :title
+  slot :subtitle
+  slot :confirm
+  slot :cancel
 
   def modal(assigns) do
     ~H"""
@@ -47,10 +50,9 @@ defmodule AnotherTestWeb.CoreComponents do
       id={@id}
       phx-mounted={@show && show_modal(@id)}
       phx-remove={hide_modal(@id)}
-      data-cancel={JS.exec(@on_cancel, "phx-remove")}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="bg-zinc-50/90 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div id={"#{@id}-bg"} class="fixed bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 transition-opacity" aria-hidden="true" />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -63,23 +65,56 @@ defmodule AnotherTestWeb.CoreComponents do
           <div class="w-full max-w-3xl p-4 sm:p-6 lg:py-8">
             <.focus_wrap
               id={"#{@id}-container"}
-              phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
+              phx-mounted={@show && show_modal(@id)}
+              phx-window-keydown={hide_modal(@on_cancel, @id)}
               phx-key="escape"
-              phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-14 shadow-lg ring-1 transition"
+              phx-click-away={hide_modal(@on_cancel, @id)}
+              class="relative bg-white rounded-lg shadow dark:bg-gray-700"
             >
-              <div class="absolute top-6 right-5">
+              <div class="absolute top-4 right-4">
                 <button
-                  phx-click={JS.exec("data-cancel", to: "##{@id}")}
+                  phx-click={hide_modal(@on_cancel, @id)}
                   type="button"
-                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
+                  class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                   aria-label={gettext("close")}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  <.icon name="hero-x-mark-solid" class="w-5 h-5" />
                 </button>
               </div>
-              <div id={"#{@id}-content"}>
+              <header :if={@title != []} class="p-4 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                  <%= render_slot(@title) %>
+                </h3>
+                <p
+                  :if={@subtitle != []}
+                  id={"#{@id}-description"}
+                  class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400"
+                >
+                  <%= render_slot(@subtitle) %>
+                </p>
+              </header>
+
+              <div id={"#{@id}-content"} class="p-6 space-y-6">
                 <%= render_slot(@inner_block) %>
+              </div>
+
+              <div :if={@confirm != [] or @cancel != []} class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <.button
+                  :for={confirm <- @confirm}
+                  id={"#{@id}-confirm"}
+                  phx-click={@on_confirm}
+                  phx-disable-with
+                  class="py-2 px-3"
+                >
+                  <%= render_slot(confirm) %>
+                </.button>
+                <.link
+                  :for={cancel <- @cancel}
+                  phx-click={hide_modal(@on_cancel, @id)}
+                  class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                >
+                  <%= render_slot(cancel) %>
+                </.link>
               </div>
             </.focus_wrap>
           </div>
@@ -101,6 +136,8 @@ defmodule AnotherTestWeb.CoreComponents do
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
   attr :title, :string, default: nil
   attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
+  attr :autoshow, :boolean, default: true, doc: "whether to auto show the flash on mount"
+  attr :close, :boolean, default: true, doc: "whether the flash can be closed"
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
 
   slot :inner_block, doc: "the optional inner block that renders the flash message"
@@ -110,23 +147,29 @@ defmodule AnotherTestWeb.CoreComponents do
     <div
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
+      phx-mounted={@autoshow && show("##{@id}")}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        "fixed hidden top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-4 shadow-md",
+        @kind == :info && "text-blue-800 bg-blue-50 dark:bg-gray-800 dark:text-blue-400",
+        @kind == :error && "text-red-800 bg-red-50 dark:bg-gray-800 dark:text-red-400"
       ]}
       {@rest}
     >
-      <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
+      <p :if={@title} class="flex items-center text-sm gap-1.5 font-semibold leading-6">
+        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="w-4 h-4" />
+        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="w-4 h-4" />
         <%= @title %>
       </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
-      <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
+      <p class="mt-2 text-xs leading-5"><%= msg %></p>
+      <button
+        :if={@close}
+        type="button"
+        class="group absolute top-2 right-1 p-2"
+        aria-label={gettext("close")}
+      >
+        <.icon name="hero-x-mark-solid" class="w-5 h-5 opacity-40 group-hover:opacity-70" />
       </button>
     </div>
     """
@@ -149,11 +192,12 @@ defmodule AnotherTestWeb.CoreComponents do
       id="disconnected"
       kind={:error}
       title="We can't find the internet"
+      close={false}
+      autoshow={false}
       phx-disconnected={show("#disconnected")}
       phx-connected={hide("#disconnected")}
-      hidden
     >
-      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
     </.flash>
     """
   end
@@ -184,7 +228,7 @@ defmodule AnotherTestWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class="space-y-8">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -206,6 +250,10 @@ defmodule AnotherTestWeb.CoreComponents do
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
+  attr :default, :boolean, default: true
+  attr :alternative, :boolean, default: false
+  attr :dark, :boolean, default: false
+
   slot :inner_block, required: true
 
   def button(assigns) do
@@ -213,8 +261,8 @@ defmodule AnotherTestWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "font-medium rounded-lg text-sm px-5 py-2.5 focus:ring-4 inline-flex items-center gap-2 focus:outline-none phx-submit-loading:opacity-75",
+        @default && "text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
         @class
       ]}
       {@rest}
@@ -254,11 +302,8 @@ defmodule AnotherTestWeb.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
-
-  attr :rest, :global,
-    include: ~w(autocomplete cols disabled form list max maxlength min minlength
-                pattern placeholder readonly required rows size step)
-
+  attr :rest, :global, include: ~w(autocomplete cols disabled form max maxlength min minlength
+                                   pattern placeholder readonly required rows size step)
   slot :inner_block
 
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
@@ -276,15 +321,15 @@ defmodule AnotherTestWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+      <label class="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-gray-300">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
-          id={@id}
+          id={@id || @name}
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           {@rest}
         />
         <%= @label %>
@@ -296,12 +341,17 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div phx-feedback-for={@name} class="space-y-1">
       <.label for={@id}><%= @label %></.label>
       <select
         id={@id}
         name={@name}
-        class="mt-1 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class={[
+          "block w-full p-2.5 bg-gray-50 text-gray-900 text-sm rounded-lg border border-gray-300",
+          "focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500",
+          "dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400",
+          "dark:focus:ring-blue-500/5 dark:focus:border-blue-500"
+        ]}
         multiple={@multiple}
         {@rest}
       >
@@ -315,16 +365,18 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div phx-feedback-for={@name} class="space-y-2">
       <.label for={@id}><%= @label %></.label>
       <textarea
-        id={@id}
+        id={@id || @name}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          "min-h-[6rem] border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          "block w-full p-2.5 min-h-[6rem] bg-gray-50 text-sm rounded-lg border border-gray-300 text-gray-900",
+          "focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500",
+          "dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500/5 dark:focus:border-blue-500",
+          "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-blue-500 phx-no-feedback:focus:ring-blue-500/5",
+          "phx-no-feedback:dark:border-gray-600 phx-no-feedback:dark:focus:border-blue-500 phx-no-feedback:dark:focus:ring-blue-500/5",
+          @errors != [] && "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
         ]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
@@ -333,21 +385,22 @@ defmodule AnotherTestWeb.CoreComponents do
     """
   end
 
-  # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div phx-feedback-for={@name} class="space-y-2">
       <.label for={@id}><%= @label %></.label>
       <input
         type={@type}
         name={@name}
-        id={@id}
+        id={@id || @name}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          "block w-full p-2.5 bg-gray-50 text-sm rounded-lg border border-gray-300 text-gray-900",
+          "focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500",
+          "dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500/5 dark:focus:border-blue-500",
+          "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-blue-500 phx-no-feedback:focus:ring-blue-500/5",
+          "phx-no-feedback:dark:border-gray-600 phx-no-feedback:dark:focus:border-blue-500 phx-no-feedback:dark:focus:ring-blue-500/5",
+          @errors != [] && "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
         ]}
         {@rest}
       />
@@ -364,7 +417,7 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -377,8 +430,8 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
+    <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm text-red-600 dark:text-red-500">
+      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 w-5 h-5 flex-none" />
       <%= render_slot(@inner_block) %>
     </p>
     """
@@ -395,12 +448,12 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
+    <header class={[@actions != [] && "flex items-center justify-between gap-6", "mb-12", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+        <h1 class="text-lg font-semibold leading-8 text-gray-900 dark:text-white">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
@@ -441,38 +494,35 @@ defmodule AnotherTestWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
-        <thead class="text-sm text-left leading-6 text-zinc-500">
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th :for={col <- @col} class="p-0 pr-6 pb-4 font-normal"><%= col[:label] %></th>
+            <th :for={col <- @col} class="px-6 py-3"><%= col[:label] %></th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
           </tr>
         </thead>
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
-              class={["relative p-0", @row_click && "hover:cursor-pointer"]}
+              class={[
+                "px-6 py-4",
+                i == 0 && "text-gray-900 whitespace-nowrap dark:text-white",
+                @row_click && "hover:cursor-pointer"
+              ]}
             >
-              <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
-                  <%= render_slot(col, @row_item.(row)) %>
-                </span>
-              </div>
+              <%= render_slot(col, @row_item.(row)) %>
             </td>
-            <td :if={@action != []} class="relative w-14 p-0">
-              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
+            <td :if={@action != []} class="px-6 py-4 w-14">
+              <div class="space-x-2 relative whitespace-nowrap py-4 text-right text-sm font-medium">
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
@@ -501,14 +551,12 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
-      <dl class="-my-4 divide-y divide-zinc-100">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
-          <dd class="text-zinc-700"><%= render_slot(item) %></dd>
-        </div>
-      </dl>
-    </div>
+    <dl class="-my-4 divide-y divide-gray-200 dark:divide-gray-700">
+      <div :for={item <- @item} class="flex gap-4 py-4 sm:gap-8">
+        <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-gray-500 dark:text-gray-400"><%= item.title %></dt>
+        <dd class="text-sm leading-6 text-gray-900 dark:text-white"><%= render_slot(item) %></dd>
+      </div>
+    </dl>
     """
   end
 
@@ -524,12 +572,12 @@ defmodule AnotherTestWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <div class="mt-16">
+    <div class="mt-12">
       <.link
         navigate={@navigate}
-        class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+        class="flex items-center gap-2 mr-8 text-sm text-gray-500 transition-colors duration-200 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
       >
-        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
+        <.icon name="hero-arrow-left-solid" class="w-4 h-4" />
         <%= render_slot(@inner_block) %>
       </.link>
     </div>
@@ -546,13 +594,15 @@ defmodule AnotherTestWeb.CoreComponents do
   You can customize the size and colors of the icons by setting
   width, height, and background color classes.
 
-  Icons are extracted from your `assets/vendor/heroicons` directory and bundled
+  Icons are extracted from your `priv/hero_icons` directory and bundled
   within your compiled app.css by the plugin in your `assets/tailwind.config.js`.
 
   ## Examples
 
-      <.icon name="hero-x-mark-solid" />
-      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+      <.icon name="hero-cake" />
+      <.icon name="hero-cake-solid" />
+      <.icon name="hero-cake-mini" />
+      <.icon name="hero-bolt" class="bg-blue-500 w-10 h-10" />
   """
   attr :name, :string, required: true
   attr :class, :string, default: nil
@@ -617,13 +667,20 @@ defmodule AnotherTestWeb.CoreComponents do
     # When using gettext, we typically pass the strings we want
     # to translate as a static argument:
     #
+    #     # Translate "is invalid" in the "errors" domain
+    #     dgettext("errors", "is invalid")
+    #
     #     # Translate the number of files with plural rules
     #     dngettext("errors", "1 file", "%{count} files", count)
     #
-    # However the error messages in our forms and APIs are generated
-    # dynamically, so we need to translate them by calling Gettext
-    # with our gettext backend as first argument. Translations are
-    # available in the errors.po file (as we use the "errors" domain).
+    # Because the error messages we show in our forms and APIs
+    # are defined inside Ecto, we need to translate them dynamically.
+    # This requires us to call the Gettext module passing our gettext
+    # backend as first argument.
+    #
+    # Note we use the "errors" domain, which means translations
+    # should be written to the errors.po file. The :count option is
+    # set by Ecto and indicates we should also apply plural rules.
     if count = opts[:count] do
       Gettext.dngettext(AnotherTestWeb.Gettext, "errors", msg, msg, count, opts)
     else

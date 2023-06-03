@@ -35,4 +35,42 @@ defmodule AnotherTestWeb.ConnCase do
     AnotherTest.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  @doc """
+  Setup helper that registers and logs in users.
+
+      setup :register_and_log_in_user
+
+  It stores an updated connection and a registered user in the
+  test context.
+  """
+  def register_and_log_in_user(%{conn: conn}) do
+    user = AnotherTest.UsersFixtures.user_fixture()
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
+  @doc """
+  Logs the given `user` into the `conn`.
+
+  It returns an updated `conn`.
+  """
+  def log_in_user(conn, user) do
+    token = AnotherTest.Users.generate_user_session_token(user)
+
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:user_token, token)
+  end
+  @doc """
+  Switches the admin to use a spefic users account
+
+  It returns an updated `conn`.
+  """
+  def switch_account(%{conn: conn, account: account}) do
+    %{conn: Plug.Conn.put_session(conn, :admin_account_id, account.id)}
+  end
+
+  def switch_account(%{conn: conn, user: user}) do
+    %{conn: Plug.Conn.put_session(conn, :admin_account_id, user.account_id)}
+  end
 end
