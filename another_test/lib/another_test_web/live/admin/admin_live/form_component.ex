@@ -15,8 +15,8 @@ defmodule AnotherTestWeb.Admin.AdminsLive.FormComponent do
         id="admin-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save">
-
+        phx-submit="save"
+      >
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:email]} type="text" label="Email" />
 
@@ -70,7 +70,9 @@ defmodule AnotherTestWeb.Admin.AdminsLive.FormComponent do
   defp save_admin(socket, :new, admin_params) do
     password = generate_password()
 
-    case Admins.create_admin(Map.merge(admin_params, %{"password" => password, "password_confirmation" => password})) do
+    case Admins.create_admin(
+           Map.merge(admin_params, %{"password" => password, "password_confirmation" => password})
+         ) do
       {:ok, admin} ->
         notify_parent({:saved, admin})
 

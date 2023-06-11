@@ -12,7 +12,11 @@ defmodule Demo.Repo.Migrations.CreateAccounts do
     end
 
     create index(:accounts, [:created_by_user_id])
-    create unique_index(:accounts, [:created_by_user_id], name: "accounts_limit_personal_index", where: "personal = true")
+
+    create unique_index(:accounts, [:created_by_user_id],
+             name: "accounts_limit_personal_index",
+             where: "personal = true"
+           )
 
     alter table(:users) do
       add :current_account_id, :binary

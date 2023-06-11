@@ -4,7 +4,6 @@ defmodule AnotherTest.OneOffsFixtures do
   entities via the `AnotherTest.OneOffs` context.
   """
 
-
   alias AnotherTest.OneOffs
 
   @doc """

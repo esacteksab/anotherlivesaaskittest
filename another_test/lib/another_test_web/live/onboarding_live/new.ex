@@ -44,7 +44,10 @@ defmodule AnotherTestWeb.OnboardingLive.New do
 
   @impl true
   def handle_event("continue", _, socket) do
-    case Accounts.update_account(socket.assigns.current_account, get_attributes(socket.assigns.step)) do
+    case Accounts.update_account(
+           socket.assigns.current_account,
+           get_attributes(socket.assigns.step)
+         ) do
       {:ok, _account} ->
         {:noreply,
          socket
@@ -72,7 +75,7 @@ defmodule AnotherTestWeb.OnboardingLive.New do
 
     %{
       onboarding_step: step.key,
-      onboarding_completed_at: (if is_last?, do: NaiveDateTime.local_now(), else: nil)
+      onboarding_completed_at: if(is_last?, do: NaiveDateTime.local_now(), else: nil)
     }
   end
 end

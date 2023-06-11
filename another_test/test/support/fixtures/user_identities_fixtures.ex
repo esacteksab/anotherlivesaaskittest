@@ -11,8 +11,7 @@ defmodule AnotherTest.UserIdentitiesFixtures do
 
   def ueberauth_response(attr \\ %{}) do
     %Ueberauth.Auth{
-      credentials: %Ueberauth.Auth.Credentials{
-      },
+      credentials: %Ueberauth.Auth.Credentials{},
       info: %Ueberauth.Auth.Info{
         birthday: nil,
         email: Map.get(attr, :email, unique_user_email()),
@@ -20,7 +19,7 @@ defmodule AnotherTest.UserIdentitiesFixtures do
         image: "https://avatars.githubusercontent.com/u/897748?v=4",
         last_name: nil,
         name: "John Doe",
-        nickname: "John D",
+        nickname: "John D"
       },
       provider: :github,
       strategy: Ueberauth.Strategy.Github,

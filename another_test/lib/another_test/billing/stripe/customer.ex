@@ -23,7 +23,9 @@ defmodule AnotherTest.Billing.Stripe.Customer do
     field :card_last4, :string
     field :remote_id, Stringable
 
-    has_many :subscriptions, Subscription, references: :remote_id, foreign_key: :remote_customer_id
+    has_many :subscriptions, Subscription,
+      references: :remote_id,
+      foreign_key: :remote_customer_id
 
     timestamps()
   end
@@ -31,7 +33,14 @@ defmodule AnotherTest.Billing.Stripe.Customer do
   @doc false
   def changeset(customer, attrs) do
     customer
-    |> cast(attrs, [:billing_email, :card_brand, :card_exp_month, :card_exp_year, :card_last4, :remote_id])
+    |> cast(attrs, [
+      :billing_email,
+      :card_brand,
+      :card_exp_month,
+      :card_exp_year,
+      :card_last4,
+      :remote_id
+    ])
     |> validate_required([:remote_id])
     |> unique_constraint(:remote_id, name: :users_remote_id_index)
   end

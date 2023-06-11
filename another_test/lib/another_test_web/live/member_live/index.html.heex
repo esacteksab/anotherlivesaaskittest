@@ -28,7 +28,7 @@
 
   <:action :let={membership}>
     <%= if is_current_member?(@current_membership, membership) && has_other_owners?(@memberships) do %>
-      <span><%= live_redirect "Leave", to: "#" %></span>
+      <span><%= live_redirect("Leave", to: "#") %></span>
     <% end %>
     <.link phx-click={JS.push("delete", value: %{id: membership.id})} data-confirm="Are you sure?">
       Remove
@@ -42,7 +42,10 @@
   </:col>
   <:action :let={invitation}>
     <%= if is_owner?(@current_membership) do %>
-      <.link phx-click={JS.push("delete-invitation", value: %{id: invitation.id})} data-confirm="Are you sure?">
+      <.link
+        phx-click={JS.push("delete-invitation", value: %{id: invitation.id})}
+        data-confirm="Are you sure?"
+      >
         Remove
       </.link>
     <% end %>

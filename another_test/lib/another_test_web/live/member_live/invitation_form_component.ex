@@ -12,14 +12,14 @@ defmodule AnotherTestWeb.MemberLive.InvitationFormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.form
-        for={@form}
-        id="invitation-form"
-        phx-target={@myself}
-        phx-submit="save">
-
+      <.form for={@form} id="invitation-form" phx-target={@myself} phx-submit="save">
         <div class="flex items-top">
-          <.input field={@form[:email]} type="text" phx-hook="Focus" placeholder="Invite a user by email" />
+          <.input
+            field={@form[:email]}
+            type="text"
+            phx-hook="Focus"
+            placeholder="Invite a user by email"
+          />
 
           <.button phx-disable-with="Saving..." class="ml-2">Invite</.button>
         </div>

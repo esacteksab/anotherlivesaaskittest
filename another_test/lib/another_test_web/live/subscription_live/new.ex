@@ -41,13 +41,14 @@ defmodule AnotherTestWeb.SubscriptionLive.New do
     encoded_token = encode_token(customer.stripe_id)
 
     # Get the stripe_id from the current plan that is picked
-    plan_stripe_id = Enum.reduce(socket.assigns.plans, nil, fn plan, plan_stripe_id ->
-      if is_nil(plan_stripe_id) && plan.id == socket.assigns.chosen_plan_id do
-        plan.stripe_id
-      else
-        plan_stripe_id
-      end
-    end)
+    plan_stripe_id =
+      Enum.reduce(socket.assigns.plans, nil, fn plan, plan_stripe_id ->
+        if is_nil(plan_stripe_id) && plan.id == socket.assigns.chosen_plan_id do
+          plan.stripe_id
+        else
+          plan_stripe_id
+        end
+      end)
 
     {:ok, %{id: stripe_session_id, payment_intent: _stripe_id}} =
       Stripe.Session.create(%{

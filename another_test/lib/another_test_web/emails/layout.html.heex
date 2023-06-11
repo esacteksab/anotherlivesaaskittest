@@ -247,9 +247,11 @@
   </head>
   <body>
     <!-- start preheader -->
-    <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
+    <div
+      class="preheader"
+      style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;"
+    >
       <%= assigns[:preheader] %>
-
     </div>
     <!-- end preheader -->
     <table class="body-wrap">
@@ -268,10 +270,8 @@
               <table width="100%">
                 <tr>
                   <td class="content-block">
-                    Copyright <%= DateTime.utc_now.year %> AnotherTest. All rights reserved.<br>
-                    AnotherTest LLC<br>
-                    26955 Fritsch Bridge<br>
-                    54933-7180 San Fransisco
+                    Copyright <%= DateTime.utc_now().year %> AnotherTest. All rights reserved.<br />
+                    AnotherTest LLC<br /> 26955 Fritsch Bridge<br /> 54933-7180 San Fransisco
                   </td>
                 </tr>
               </table>

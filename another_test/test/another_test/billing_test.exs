@@ -114,7 +114,13 @@ defmodule AnotherTest.BillingTest do
 
     test "create_or_update/2 - Subscription when updating a subscription" do
       remote_id = unique_remote_id("sub")
-      attrs = stripe_subscription_data(%{id: remote_id, status: "active", current_period_start: 1_682_076_598})
+
+      attrs =
+        stripe_subscription_data(%{
+          id: remote_id,
+          status: "active",
+          current_period_start: 1_682_076_598
+        })
 
       assert {:ok, subscription} = Billing.create_or_update(Subscription, attrs)
       assert subscription.remote_id == remote_id
@@ -122,7 +128,8 @@ defmodule AnotherTest.BillingTest do
       assert subscription.current_period_start == ~N[2023-04-21 11:29:58]
       assert subscription.canceled_at == nil
 
-      update_attrs = stripe_subscription_data(%{id: remote_id, status: "canceled", canceled_at: 1_684_668_099})
+      update_attrs =
+        stripe_subscription_data(%{id: remote_id, status: "canceled", canceled_at: 1_684_668_099})
 
       assert {:ok, _subscription} = Billing.create_or_update(Subscription, update_attrs)
 

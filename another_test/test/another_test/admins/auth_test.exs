@@ -13,7 +13,9 @@ defmodule AnotherTest.Admins.AuthTest do
 
     test "authenticate_admin/2 with invalid password returns error tuple" do
       admin = admin_fixture()
-      assert Auth.authenticate_admin(admin.email, "wrongpassword") == {:error, "Incorrect email or password"}
+
+      assert Auth.authenticate_admin(admin.email, "wrongpassword") ==
+               {:error, "Incorrect email or password"}
     end
   end
 end

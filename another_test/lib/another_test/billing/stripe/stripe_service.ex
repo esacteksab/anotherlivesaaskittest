@@ -14,27 +14,27 @@ defmodule AnotherTest.Billing.Stripe.StripeService do
       stripe_id = Keyword.get(opts, :remote_id) || "price_#{token()}"
 
       {:ok,
-        %Stripe.List{
-          data: [
-            %Stripe.Plan{
-              active: true,
-              amount: 9900,
-              amount_decimal: "9900",
-              currency: "usd",
-              id: stripe_id,
-              interval: "year",
-              interval_count: 1,
-              nickname: "One year membership",
-              object: "plan",
-              product: "prod_I2TE8siyANz84p",
-              usage_type: "licensed"
-            }
-          ],
-          has_more: false,
-          object: "list",
-          total_count: nil,
-          url: "/v1/plans"
-        }}
+       %Stripe.List{
+         data: [
+           %Stripe.Plan{
+             active: true,
+             amount: 9900,
+             amount_decimal: "9900",
+             currency: "usd",
+             id: stripe_id,
+             interval: "year",
+             interval_count: 1,
+             nickname: "One year membership",
+             object: "plan",
+             product: "prod_I2TE8siyANz84p",
+             usage_type: "licensed"
+           }
+         ],
+         has_more: false,
+         object: "list",
+         total_count: nil,
+         url: "/v1/plans"
+       }}
     else
       Stripe.Plan.list()
     end
@@ -45,22 +45,22 @@ defmodule AnotherTest.Billing.Stripe.StripeService do
       stripe_id = Keyword.get(opts, :remote_id) || "prod_#{token()}"
 
       {:ok,
-        %Stripe.List{
-          data: [
-            %Stripe.Product{
-              created: 1_600_353_622,
-              id: stripe_id,
-              name: "Premium Plan",
-              object: "product",
-              updated: 1_600_798_919,
-              active: true
-            }
-          ],
-          has_more: false,
-          object: "list",
-          total_count: nil,
-          url: "/v1/products"
-        }}
+       %Stripe.List{
+         data: [
+           %Stripe.Product{
+             created: 1_600_353_622,
+             id: stripe_id,
+             name: "Premium Plan",
+             object: "product",
+             updated: 1_600_798_919,
+             active: true
+           }
+         ],
+         has_more: false,
+         object: "list",
+         total_count: nil,
+         url: "/v1/products"
+       }}
     else
       Stripe.Product.list()
     end
@@ -83,18 +83,19 @@ defmodule AnotherTest.Billing.Stripe.StripeService do
     if test?() do
       case args do
         %{customer: "" <> customer_stripe_id} ->
-          payment_method =
-            %Stripe.PaymentMethod{
-              card: %{
-                brand: "visa",
-                exp_month: 5,
-                exp_year: 2035,
-                last4: "4242",
-              },
-              customer: customer_stripe_id,
-              type: "card"
-            }
+          payment_method = %Stripe.PaymentMethod{
+            card: %{
+              brand: "visa",
+              exp_month: 5,
+              exp_year: 2035,
+              last4: "4242"
+            },
+            customer: customer_stripe_id,
+            type: "card"
+          }
+
           {:ok, %{data: [payment_method]}}
+
         _ ->
           {:ok, %{data: []}}
       end
@@ -120,15 +121,16 @@ defmodule AnotherTest.Billing.Stripe.StripeService do
 
     if test?() do
       stripe_id = Keyword.get(opts, :remote_id) || "cus_#{token()}"
+
       {:ok,
-        %Stripe.Customer{
-          created: 1_600_892_385,
-          email: "andreas@codered.se",
-          id: stripe_id,
-          name: "Andreas Eriksson",
-          object: "customer"
-        }
-        |> Map.merge(args)}
+       %Stripe.Customer{
+         created: 1_600_892_385,
+         email: "andreas@codered.se",
+         id: stripe_id,
+         name: "Andreas Eriksson",
+         object: "customer"
+       }
+       |> Map.merge(args)}
     else
       Stripe.Customer.create(args)
     end
@@ -138,7 +140,11 @@ defmodule AnotherTest.Billing.Stripe.StripeService do
     :crypto.strong_rand_bytes(12) |> Base.encode16(case: :lower)
   end
 
-  defp construct_webhook_event(_raw_body, "wrong_signature" = _stripe_signature, _webhook_signing_key) do
+  defp construct_webhook_event(
+         _raw_body,
+         "wrong_signature" = _stripe_signature,
+         _webhook_signing_key
+       ) do
     send(self(), {:ok, "invalid_webhook"})
 
     {:error, "Signature has expired"}
@@ -148,15 +154,14 @@ defmodule AnotherTest.Billing.Stripe.StripeService do
     send(self(), {:ok, "valid_webhook"})
 
     {:ok,
-      %Stripe.Event{
-        id: "evt_#{token()}",
-        object: "event",
-        request: %{
-          id: "req_#{token()}",
-          idempotency_key: token()
-        },
-        type: "payment_intent.created"
-      }
-    }
+     %Stripe.Event{
+       id: "evt_#{token()}",
+       object: "event",
+       request: %{
+         id: "req_#{token()}",
+         idempotency_key: token()
+       },
+       type: "payment_intent.created"
+     }}
   end
 end

@@ -14,9 +14,10 @@ defmodule AnotherTest.Billing.Stripe.SynchronizeCustomer do
   end
 
   def sync_payment_method(%{remote_id: nil} = _customer), do: nil
+
   def sync_payment_method(%{remote_id: remote_id} = _customer) do
     case stripe_service(:list_payment_methods, args: %{customer: remote_id, type: "card"}) do
-      {:ok, %{data: [payment_method|_]}} -> HandlePaymentMethods.add_card_info(payment_method)
+      {:ok, %{data: [payment_method | _]}} -> HandlePaymentMethods.add_card_info(payment_method)
       {:ok, %{data: []}} -> HandlePaymentMethods.remove_card_info(%{customer: remote_id})
       _ -> nil
     end

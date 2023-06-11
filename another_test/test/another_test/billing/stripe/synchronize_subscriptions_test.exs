@@ -51,10 +51,10 @@ defmodule AnotherTest.Billing.SynchronizeSubscriptionsTest do
           currency: "usd",
           deleted: nil,
           interval: "month",
-          interval_count: 1,
+          interval_count: 1
         },
         start_date: 1_682_076_599,
-        status: "active",
+        status: "active"
       }
     ]
   end

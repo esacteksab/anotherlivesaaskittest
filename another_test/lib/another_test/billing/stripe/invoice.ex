@@ -21,7 +21,10 @@ defmodule AnotherTest.Billing.Stripe.Invoice do
     field :status, :string
     field :subtotal, :integer
 
-    belongs_to :customer, Customer, references: :remote_id, foreign_key: :remote_customer_id, type: Stringable
+    belongs_to :customer, Customer,
+      references: :remote_id,
+      foreign_key: :remote_customer_id,
+      type: Stringable
 
     timestamps()
   end
@@ -31,7 +34,14 @@ defmodule AnotherTest.Billing.Stripe.Invoice do
   @doc false
   def changeset(invoice, attrs) do
     invoice
-    |> cast(attrs, [:hosted_invoice_url, :invoice_pdf, :status, :remote_id, :subtotal, :remote_customer_id])
+    |> cast(attrs, [
+      :hosted_invoice_url,
+      :invoice_pdf,
+      :status,
+      :remote_id,
+      :subtotal,
+      :remote_customer_id
+    ])
     |> validate_required([:remote_id])
     |> unique_constraint(:remote_id, name: :billing_invoices_remote_id_index)
   end

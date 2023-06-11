@@ -7,9 +7,7 @@ defmodule AnotherTest.Accounts.Account do
 
   @derive {
     Flop.Schema,
-    default_limit: 20,
-    filterable: [:name],
-    sortable: [:name]
+    default_limit: 20, filterable: [:name], sortable: [:name]
   }
   schema "accounts" do
     field :name, :string

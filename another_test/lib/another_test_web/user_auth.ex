@@ -92,6 +92,7 @@ defmodule AnotherTestWeb.UserAuth do
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Users.get_user_by_session_token(user_token)
+
     account =
       case user do
         nil -> nil
@@ -229,6 +230,7 @@ defmodule AnotherTestWeb.UserAuth do
           |> put_flash(:info, "You must pass two factor authentication to continue")
           |> redirect(to: ~p"/users/two_factor")
           |> halt()
+
         _ ->
           conn
       end

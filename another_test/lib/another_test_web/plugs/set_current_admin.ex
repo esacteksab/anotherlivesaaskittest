@@ -15,7 +15,9 @@ defmodule AnotherTestWeb.Plugs.SetCurrentAdmin do
         conn
         |> assign(:current_admin, admin)
         |> put_session(:current_admin_id, admin.id)
-      _ -> conn
+
+      _ ->
+        conn
     end
   end
 end

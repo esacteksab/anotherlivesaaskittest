@@ -10,10 +10,14 @@ defmodule AnotherTestWeb.UserTwoFactorLive do
       <p class="text-sm text-center">Required for additional security</p>
 
       <%= if @has_setup do %>
-        <p class="text-sm text-center">Open your authenticator and add the verification challange code below.</p>
+        <p class="text-sm text-center">
+          Open your authenticator and add the verification challange code below.
+        </p>
       <% else %>
-        <%= raw render_png(@url) %>
-        <p class="text-sm text-center">Scan the QR code with your Google authenticator and add the verification challange code below.</p>
+        <%= raw(render_png(@url)) %>
+        <p class="text-sm text-center">
+          Scan the QR code with your Google authenticator and add the verification challange code below.
+        </p>
       <% end %>
 
       <.simple_form :let={f} for={:user} id="verify-2fa-auth" phx-submit="verify">

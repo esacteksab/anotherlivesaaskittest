@@ -17,10 +17,8 @@ defmodule AnotherTest.DailyReports.DailyReportWorker do
 
     Admins.list_admins()
     |> Enum.each(fn %{email: email} ->
-
       DailyReportNotifier.deliver_report(%{email: email, metrics: metrics})
       |> Mailer.deliver()
-
     end)
   end
 end

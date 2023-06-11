@@ -28,15 +28,18 @@ defmodule AnotherTest.Onboarding do
 
   def get_step_for_account(%{onboarding_required: false} = _account), do: nil
   def get_step_for_account(%{onboarding_completed_at: %NaiveDateTime{}} = _account), do: nil
+
   def get_step_for_account(%{onboarding_step: nil} = _account) do
     steps() |> List.first()
   end
+
   def get_step_for_account(%{onboarding_step: current_step} = _account) do
     step_keys = Enum.map(steps(), & &1.key)
 
-    case Enum.find_index(step_keys, &  &1 == current_step) do
+    case Enum.find_index(step_keys, &(&1 == current_step)) do
       nil ->
         nil
+
       idx ->
         Enum.at(steps(), idx + 1)
     end

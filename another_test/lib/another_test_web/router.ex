@@ -113,7 +113,6 @@ defmodule AnotherTestWeb.Router do
       live "/accounts/:account_id/members", MemberLive.Index, :index
       live "/subscriptions/new", SubscriptionLive.New, :new
       live "/billing", BillingLive.Index, :index
-
     end
   end
 
@@ -150,7 +149,7 @@ defmodule AnotherTestWeb.Router do
   scope "/admin", AnotherTestWeb.Admin, as: :admin do
     pipe_through [:browser, :admin, :require_current_admin, :admin_layout]
 
-      live_session :admin, on_mount: [{AnotherTestWeb.Admin.InitAssigns, :admin_layout}] do
+    live_session :admin, on_mount: [{AnotherTestWeb.Admin.InitAssigns, :admin_layout}] do
       live "/", DashboardLive.Index, :index
       live "/settings", SettingLive.Edit, :edit
 

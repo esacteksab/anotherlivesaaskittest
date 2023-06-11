@@ -10,7 +10,10 @@
     <.link phx-click={JS.push("accept-invitation", value: %{id: invitation.id})}>
       Accept
     </.link>
-    <.link phx-click={JS.push("decline-invitation", value: %{id: invitation.id})} data-confirm="Are you sure?">
+    <.link
+      phx-click={JS.push("decline-invitation", value: %{id: invitation.id})}
+      data-confirm="Are you sure?"
+    >
       Decline
     </.link>
   </:action>
@@ -20,7 +23,9 @@
   <:col :let={membership} label="Account">
     <%= membership.account.name %>
     <%= if membership.account.personal do %>
-      <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Personal</span>
+      <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+        Personal
+      </span>
     <% end %>
   </:col>
   <:col :let={membership} label="Role">

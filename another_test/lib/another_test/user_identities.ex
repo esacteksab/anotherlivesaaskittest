@@ -18,17 +18,24 @@ defmodule AnotherTest.UserIdentities do
   # 2. Identity exists, user exists => Login user
   # 3. User exists, identity doesnt exist => Return an error. If user is signed in, connect the two
   # 4. Identity exists, user doesnt exist => User has changed email, look at user attached to user_identity
-  def find_or_create_user(%Ueberauth.Auth{uid: uid, provider: provider, info: %{email: "" <> email}}) do
+  def find_or_create_user(%Ueberauth.Auth{
+        uid: uid,
+        provider: provider,
+        info: %{email: "" <> email}
+      }) do
     user = Users.get_user_by_email(email)
     user_identity = get_user_identity_by_provider_and_uid(provider, uid)
 
     case {!is_nil(user), !is_nil(user_identity)} do
       {false, true} ->
         {:ok, user_identity.user}
+
       {true, true} ->
         {:ok, user}
+
       {true, false} ->
         {:error, user}
+
       {false, false} ->
         {:ok, user} = create_user_from_user_identity(email)
         create_user_identity(user, %{uid: uid, provider: provider})

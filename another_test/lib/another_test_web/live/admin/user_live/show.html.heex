@@ -3,7 +3,9 @@
   <:link><.link navigate={~p"/admin/users"}>Users</.link></:link>
   <:link><.link navigate={~p"/admin/users/#{@user}"}>User</.link></:link>
 
-  <.link href={~p"/admin/impersonate/#{@user.id}"} method="post" class="btn btn-outline">Impersonate</.link>
+  <.link href={~p"/admin/impersonate/#{@user.id}"} method="post" class="btn btn-outline">
+    Impersonate
+  </.link>
 </.admin_page_heading>
 
 <div class="flex flex-wrap">
@@ -11,11 +13,16 @@
     <.card shadow border>
       <.list>
         <:item title="Email"><%= @user.email %></:item>
-        <:item title="Signed up"><%= Calendar.strftime @user.inserted_at, "%x" %></:item>
+        <:item title="Signed up"><%= Calendar.strftime(@user.inserted_at, "%x") %></:item>
       </.list>
 
       <div class="text-sm border-t mt-2 pt-2 border-gray-200 dark:border-gray-800">
-        <.link navigate={~p"/admin/users"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Back</.link>
+        <.link
+          navigate={~p"/admin/users"}
+          class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+        >
+          Back
+        </.link>
       </div>
     </.card>
 
@@ -24,7 +31,9 @@
         <:col :let={membership} label="name">
           <%= membership.account.name %>
           <%= if membership.account.personal do %>
-            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Personal</span>
+            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+              Personal
+            </span>
           <% end %>
         </:col>
         <:col :let={membership} label="Role">

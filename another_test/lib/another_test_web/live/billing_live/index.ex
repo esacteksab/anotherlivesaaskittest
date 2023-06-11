@@ -51,6 +51,9 @@ defmodule AnotherTestWeb.BillingLive.Index do
   end
 
   defp get_invoices(billing_customer) do
-    Billing.list_records(Invoice, where: [remote_customer_id: billing_customer.id], order_by: [desc: :inserted_at])
+    Billing.list_records(Invoice,
+      where: [remote_customer_id: billing_customer.id],
+      order_by: [desc: :inserted_at]
+    )
   end
 end

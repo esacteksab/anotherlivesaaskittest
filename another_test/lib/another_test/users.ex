@@ -151,7 +151,8 @@ defmodule AnotherTest.Users do
   defp create_personal_account({:ok, user} = result) do
     {:ok, account} =
       AnotherTest.Accounts.create_account(
-        user, %{personal: true, name: "Personal Account"}
+        user,
+        %{personal: true, name: "Personal Account"}
       )
 
     AnotherTest.Accounts.create_membership(account, user, %{role: :owner})

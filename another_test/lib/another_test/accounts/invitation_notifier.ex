@@ -12,16 +12,14 @@ defmodule AnotherTest.Accounts.InvitationNotifier do
     |> from({"AnotherTest", "contact@example.com"})
     |> subject("Invited to join")
     |> to(email)
-    |> text_body(
-      """
-      You are invited to join the team
+    |> text_body("""
+    You are invited to join the team
 
-      Please use the following url to join:
+    Please use the following url to join:
 
-      #{url}
+    #{url}
 
-      You can disregard this email if you think it was sent to you by mistake.
-      """
-    )
+    You can disregard this email if you think it was sent to you by mistake.
+    """)
   end
 end

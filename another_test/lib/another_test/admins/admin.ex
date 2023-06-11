@@ -7,9 +7,7 @@ defmodule AnotherTest.Admins.Admin do
 
   @derive {
     Flop.Schema,
-    default_limit: 20,
-    filterable: [:name, :email],
-    sortable: [:name, :email]
+    default_limit: 20, filterable: [:name, :email], sortable: [:name, :email]
   }
   @derive {Inspect, except: [:password]}
   schema "admins" do
@@ -57,7 +55,9 @@ defmodule AnotherTest.Admins.Admin do
     changeset
     |> validate_required([:password])
     |> validate_length(:password, min: 8, max: 80)
-    |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
+    |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/,
+      message: "at least one digit or punctuation character"
+    )
     |> prepare_changes(&hash_password/1)
   end
 
@@ -73,6 +73,7 @@ defmodule AnotherTest.Admins.Admin do
     case get_change(changeset, :password) do
       nil ->
         changeset
+
       _ ->
         changeset
         |> validate_confirmation(:password, message: "does not match password")

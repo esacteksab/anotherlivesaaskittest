@@ -20,11 +20,10 @@ defmodule AnotherTestWeb.Admin.SessionController do
   def create(conn, %{"admin" => %{"email" => email}}) do
     with true <- zero_admins?(),
          {:ok, email, password} <- generate_admin(email) do
-
-          Admins.Auth.authenticate_admin(email, password)
-          |> login_reply(conn, "Your password is: #{password}")
+      Admins.Auth.authenticate_admin(email, password)
+      |> login_reply(conn, "Your password is: #{password}")
     else
-       _ ->
+      _ ->
         Admins.Auth.authenticate_admin(email, "Error creating admin")
         |> login_reply(conn)
     end
@@ -49,7 +48,7 @@ defmodule AnotherTestWeb.Admin.SessionController do
 
   defp login_reply({:error, reason}, conn, flash) do
     conn
-    |> put_flash(:error, (flash || to_string(reason)))
+    |> put_flash(:error, flash || to_string(reason))
     |> new(%{})
   end
 end

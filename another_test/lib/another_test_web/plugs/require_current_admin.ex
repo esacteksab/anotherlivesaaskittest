@@ -16,6 +16,7 @@ defmodule AnotherTestWeb.Plugs.RequireCurrentAdmin do
     case conn.assigns[:current_admin] do
       %Admin{} ->
         conn
+
       _ ->
         conn
         |> redirect(to: ~p"/admin/sign_in")

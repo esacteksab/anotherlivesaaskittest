@@ -3,14 +3,20 @@
 <%= if @zero_admins? do %>
   <div class="alert alert-info">
     <div class="flex-1">
-      <label>There is no admin created!<br>Do you want to create the first one?</label>
+      <label>There is no admin created!<br />Do you want to create the first one?</label>
     </div>
   </div>
 <% end %>
 
 <.simple_form for={@form} action={~p"/admin/sign_in"}>
   <.input field={@form[:email]} type="email" required label="Email" />
-  <.input :if={@zero_admins? == false} field={@form[:password]} type="password" required label="Password" />
+  <.input
+    :if={@zero_admins? == false}
+    field={@form[:password]}
+    type="password"
+    required
+    label="Password"
+  />
 
   <:actions>
     <.button :if={@zero_admins? == false} class="w-full btn btn-primary">Login</.button>
@@ -24,6 +30,8 @@
   </div>
 
   <div class="flex justify-center mt-3">
-    <.link navigate={~p"/admin/reset_password"} class="btn btn-link btn-sm">Login with magic link</.link>
+    <.link navigate={~p"/admin/reset_password"} class="btn btn-link btn-sm">
+      Login with magic link
+    </.link>
   </div>
 <% end %>

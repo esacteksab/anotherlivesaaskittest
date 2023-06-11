@@ -21,7 +21,11 @@ defmodule AnotherTest.SignupsTest do
     end
 
     test "create_signup/1 with valid data creates a signup" do
-      valid_attrs = %{email: "some@email", signed_of_at: ~N[2022-03-14 19:47:00], topic: "some topic"}
+      valid_attrs = %{
+        email: "some@email",
+        signed_of_at: ~N[2022-03-14 19:47:00],
+        topic: "some topic"
+      }
 
       assert {:ok, %Signup{} = signup} = Signups.create_signup(valid_attrs)
       assert signup.email == "some@email"
@@ -35,7 +39,12 @@ defmodule AnotherTest.SignupsTest do
 
     test "update_signup/2 with valid data updates the signup" do
       signup = signup_fixture()
-      update_attrs = %{email: "some@updated_email", signed_of_at: ~N[2022-03-15 19:47:00], topic: "some updated topic"}
+
+      update_attrs = %{
+        email: "some@updated_email",
+        signed_of_at: ~N[2022-03-15 19:47:00],
+        topic: "some updated topic"
+      }
 
       assert {:ok, %Signup{} = signup} = Signups.update_signup(signup, update_attrs)
       assert signup.email == "some@updated_email"

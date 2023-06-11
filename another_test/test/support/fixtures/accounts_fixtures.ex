@@ -48,11 +48,9 @@ defmodule AnotherTest.AccountsFixtures do
   end
 
   def membership_fixture(%Account{} = account, %User{} = user, attrs \\ %{}) do
-    attrs =
-      Enum.into(attrs, %{
-      })
+    attrs = Enum.into(attrs, %{})
 
-   {:ok, membership} = Accounts.create_membership(account, user, attrs)
+    {:ok, membership} = Accounts.create_membership(account, user, attrs)
 
     Accounts.get_membership!(account, membership.id)
   end
@@ -77,7 +75,7 @@ defmodule AnotherTest.AccountsFixtures do
         email: unique_user_email()
       })
 
-   {:ok, invitation} = Accounts.create_invitation(account, user, attrs)
+    {:ok, invitation} = Accounts.create_invitation(account, user, attrs)
 
     Accounts.get_invitation!(account, invitation.id)
   end

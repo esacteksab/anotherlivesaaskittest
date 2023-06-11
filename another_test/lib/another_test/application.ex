@@ -22,8 +22,8 @@ defmodule AnotherTest.Application do
       # {AnotherTest.Worker, arg}
       webhook_processor_service(),
       {Oban, oban_config()},
-      {Cachex, name: :general_cache}, # You can add additional caches with different names
-
+      # You can add additional caches with different names
+      {Cachex, name: :general_cache}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

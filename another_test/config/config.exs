@@ -11,11 +11,10 @@ config :another_test, :env, Mix.env()
 
 config :another_test,
   ecto_repos: [AnotherTest.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: true],
+  require_2fa_setup: true
 
-config :another_test, AnotherTest.Repo,
-  migration_primary_key: [name: :id, type: :binary_id]
-
+config :another_test, AnotherTest.Repo, migration_primary_key: [name: :id, type: :binary_id]
 
 # Configures the endpoint
 config :another_test, AnotherTestWeb.Endpoint,
@@ -68,13 +67,15 @@ config :phoenix, :json_library, Jason
 
 config :another_test, AnotherTest.Users.Guardian,
   issuer: "another_test",
-  secret_key: System.get_env("GUARDIAN_SECRET_KEY_ADMINS") || "pY5QjCTqIl5N0Gc6pxyJIAKNwfT9ziJVVGyoAhdqvTCN/KIESs9dey3psBzx8VXN"
-
+  secret_key:
+    System.get_env("GUARDIAN_SECRET_KEY_ADMINS") ||
+      "pY5QjCTqIl5N0Gc6pxyJIAKNwfT9ziJVVGyoAhdqvTCN/KIESs9dey3psBzx8VXN"
 
 config :another_test, AnotherTest.Admins.Guardian,
   issuer: "another_test",
-  secret_key: System.get_env("GUARDIAN_SECRET_KEY_ADMINS") || "Wnd9RUfiorxOt8tYdrl7JMp9KC7yYTimRTByJLwhveWp5vSVOeL2yH/94RYmLzbz"
-
+  secret_key:
+    System.get_env("GUARDIAN_SECRET_KEY_ADMINS") ||
+      "Wnd9RUfiorxOt8tYdrl7JMp9KC7yYTimRTByJLwhveWp5vSVOeL2yH/94RYmLzbz"
 
 # This implements Ueberauth with the Github Strategy.
 # There are other strategies like Twitter, Google, Apple and Facebook.
@@ -88,17 +89,16 @@ config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
-
 config :another_test, Oban,
   repo: AnotherTest.Repo,
   queues: [default: 10, mailers: 20, high: 50, low: 5],
   plugins: [
-    {Oban.Plugins.Pruner, max_age: (3600 * 24)},
+    {Oban.Plugins.Pruner, max_age: 3600 * 24},
     {Oban.Plugins.Cron,
-      crontab: [
-        {"@reboot", AnotherTest.OneOffs.RunOneOffsWorker},
-        {"0 9 * * *", AnotherTest.Campaigns.ExecuteStepWorker},
-        {"0 8 * * *", AnotherTest.DailyReports.DailyReportWorker},
+     crontab: [
+       {"@reboot", AnotherTest.OneOffs.RunOneOffsWorker},
+       {"0 9 * * *", AnotherTest.Campaigns.ExecuteStepWorker},
+       {"0 8 * * *", AnotherTest.DailyReports.DailyReportWorker}
        # {"0 2 * * *", AnotherTest.Workers.DailyDigestWorker},
        # {"@reboot", AnotherTest.Workers.StripeSyncWorker},
        # {"0 2 * * *", AnotherTest.DailyReports.DailyReportWorker},
@@ -106,11 +106,11 @@ config :another_test, Oban,
   ]
 
 config :flop, repo: AnotherTest.Repo
+
 config :stripity_stripe,
   api_key: System.get_env("STRIPE_SECRET"),
   public_key: System.get_env("STRIPE_PUBLIC"),
   webhook_signing_key: System.get_env("STRIPE_WEBHOOK_SIGNING_KEY")
-
 
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,
@@ -122,8 +122,10 @@ config :fun_with_flags, :cache_bust_notifications,
   client: AnotherTest.PubSub
 
 config :waffle,
-  storage: Waffle.Storage.S3, # or Waffle.Storage.Local
-  bucket: System.get_env("AWS_BUCKET") # if using S3
+  # or Waffle.Storage.Local
+  storage: Waffle.Storage.S3,
+  # if using S3
+  bucket: System.get_env("AWS_BUCKET")
 
 config :ex_aws,
   json_codec: Jason,

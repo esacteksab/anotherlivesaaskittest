@@ -32,6 +32,7 @@ defmodule AnotherTest.Signups.Signup do
       "" <> email ->
         email = String.downcase(email)
         put_change(changeset, :email, email)
+
       _ ->
         changeset
     end

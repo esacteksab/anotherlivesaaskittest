@@ -10,11 +10,11 @@ defmodule AnotherTestWeb.StripeWebhookController do
   plug :assert_body_and_signature
 
   def create(conn, _params) do
-    stripe_service(:webhook_construct_event, [
+    stripe_service(:webhook_construct_event,
       raw_body: conn.assigns[:raw_body],
       stripe_signature: conn.assigns[:stripe_signature],
       webhook_signing_key: webhook_signing_key()
-    ])
+    )
     |> case do
       {:ok, %{} = event} -> notify_subscribers(event)
       {:error, reason} -> reason
@@ -38,6 +38,7 @@ defmodule AnotherTestWeb.StripeWebhookController do
     case {conn.assigns[:raw_body], conn.assigns[:stripe_signature]} do
       {"" <> _, "" <> _} ->
         conn
+
       _ ->
         conn
         |> send_resp(:created, "")

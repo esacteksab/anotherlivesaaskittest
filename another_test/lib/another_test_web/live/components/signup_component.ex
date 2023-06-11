@@ -1,5 +1,6 @@
 defmodule AnotherTestWeb.Live.SignupComponent do
   use AnotherTestWeb, :live_component
+
   @moduledoc """
   This module can be mounted in any LiveView and act as a signup form.
 
@@ -18,17 +19,17 @@ defmodule AnotherTestWeb.Live.SignupComponent do
   def render(assigns) do
     ~H"""
     <div id={@id}>
-      <.form
-        for={@form}
-        id="signup-form"
-        phx-target={@myself}
-        phx-submit="save">
-
+      <.form for={@form} id="signup-form" phx-target={@myself} phx-submit="save">
         <%= if @submitted do %>
           <div class="py-2 font-semibold">You are successfully signed up!</div>
         <% else %>
           <div class="flex items-top">
-            <.input field={@form[:email]} type="text" phx-hook="Focus" placeholder="Signup with email" />
+            <.input
+              field={@form[:email]}
+              type="text"
+              phx-hook="Focus"
+              placeholder="Signup with email"
+            />
             <.button phx-disable-with="Saving..." class="ml-2">Invite</.button>
           </div>
         <% end %>
@@ -59,8 +60,8 @@ defmodule AnotherTestWeb.Live.SignupComponent do
         notify_parent({:saved, signup})
 
         {:noreply,
-          socket
-          |> handle_success()}
+         socket
+         |> handle_success()}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

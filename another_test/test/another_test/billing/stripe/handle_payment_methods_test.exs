@@ -43,22 +43,27 @@ defmodule AnotherTest.Billing.HandlePaymentMethodsTest do
   end
 
   defp setup_customer(_) do
-    {:ok, customer} = customer_fixture() |> Billing.update_customer(%{
+    {:ok, customer} =
+      customer_fixture()
+      |> Billing.update_customer(%{
         card_brand: nil,
         card_last4: nil,
         card_exp_year: nil,
         card_exp_month: nil
       })
+
     %{customer: customer}
   end
 
   defp setup_customer_with_info(_) do
-    {:ok, customer} = customer_fixture() |> Billing.update_customer(%{
-      card_brand: "visa",
-      card_last4: "1234",
-      card_exp_year: 25,
-      card_exp_month: 12
-    })
+    {:ok, customer} =
+      customer_fixture()
+      |> Billing.update_customer(%{
+        card_brand: "visa",
+        card_last4: "1234",
+        card_exp_year: 25,
+        card_exp_month: 12
+      })
 
     %{customer: customer}
   end

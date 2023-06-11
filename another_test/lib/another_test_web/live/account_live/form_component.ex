@@ -12,14 +12,14 @@ defmodule AnotherTestWeb.AccountLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.form
-        for={@form}
-        id="account-form"
-        phx-target={@myself}
-        phx-submit="save">
-
+      <.form for={@form} id="account-form" phx-target={@myself} phx-submit="save">
         <div class="flex items-top">
-          <.input field={@form[:name]} type="text" phx-hook="Focus" placeholder="Add name of the team" />
+          <.input
+            field={@form[:name]}
+            type="text"
+            phx-hook="Focus"
+            placeholder="Add name of the team"
+          />
           <.button phx-disable-with="Saving..." class="ml-2">Save</.button>
         </div>
       </.form>
@@ -40,6 +40,7 @@ defmodule AnotherTestWeb.AccountLive.FormComponent do
   @impl true
   def handle_event("save", %{"account" => account_params}, socket) do
     user = socket.assigns.current_user
+
     case Accounts.create_account(user, account_params) do
       {:ok, account} ->
         Accounts.create_membership(account, user, %{role: :owner})

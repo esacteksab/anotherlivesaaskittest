@@ -15,13 +15,15 @@ defmodule AnotherTestWeb.StripeReturnController do
   def new(conn, %{"t" => "success", "bp" => encoded_token} = _params) do
     case decode_token(encoded_token) do
       {:ok, customer_stripe_id} ->
-
         user_return_to = get_session(conn, :user_return_to) || ~p"/billing"
         customer = Billing.get_record(Customer, customer_stripe_id)
 
-        case stripe_service(:list_subscriptions, args: %{customer: customer.remote_id, status: "active"}) do
-          {:ok, %Stripe.List{data: [stripe_subscription|_]}} ->
+        case stripe_service(:list_subscriptions,
+               args: %{customer: customer.remote_id, status: "active"}
+             ) do
+          {:ok, %Stripe.List{data: [stripe_subscription | _]}} ->
             Billing.create_or_update(Subscription, stripe_subscription)
+
           _ ->
             nil
         end

@@ -18,7 +18,7 @@ defmodule AnotherTestWeb.Admin.DashboardLive.Index do
     {
       :noreply,
       socket
-      |> push_event("new-point",  %{label: "Label", value: value})
+      |> push_event("new-point", %{label: "Label", value: value})
     }
   end
 end

@@ -12,17 +12,17 @@ defmodule Mix.Tasks.GenerateAdmin do
 
     case AnotherTest.Admins.GenerateAdmin.generate_admin(email) do
       {:ok, email, password} ->
-        Mix.shell().info """
+        Mix.shell().info("""
         An admin was created with the
           email: #{email}
           password: #{password}
-        """
+        """)
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        Mix.shell().info """
+        Mix.shell().info("""
         There was en error:
-          #{inspect changeset.errors}
-        """
+          #{inspect(changeset.errors)}
+        """)
     end
   end
 end

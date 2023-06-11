@@ -7,8 +7,8 @@ defmodule AnotherTestWeb.Schema do
 
   alias AnotherTestWeb.Schema
 
-  import_types Absinthe.Type.Custom
-  import_types Schema.UserTypes
+  import_types(Absinthe.Type.Custom)
+  import_types(Schema.UserTypes)
 
   query do
     import_fields(:get_user)

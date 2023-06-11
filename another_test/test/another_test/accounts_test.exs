@@ -77,7 +77,7 @@ defmodule AnotherTest.AccountsTest do
       account = account_fixture()
       assert %Account{members: []} = Accounts.with_members(account)
       membership_fixture(account)
-      assert %Account{members: [_|_]} = Accounts.with_members(account)
+      assert %Account{members: [_ | _]} = Accounts.with_members(account)
     end
 
     test "can_be_accessed_by_a_user?/2 returns false if a user cant access the account" do
@@ -116,21 +116,30 @@ defmodule AnotherTest.AccountsTest do
       assert Accounts.get_membership!(account, membership.id) == membership
     end
 
-    test "create_membership/1 with valid data creates a membership", %{user: user, account: account} do
+    test "create_membership/1 with valid data creates a membership", %{
+      user: user,
+      account: account
+    } do
       valid_attrs = %{}
 
-      assert {:ok, %Membership{} = _membership} = Accounts.create_membership(account, user, valid_attrs)
+      assert {:ok, %Membership{} = _membership} =
+               Accounts.create_membership(account, user, valid_attrs)
     end
 
-    test "create_membership/1 with invalid data returns error changeset", %{user: user, account: account} do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_membership(account, user, @invalid_attrs)
+    test "create_membership/1 with invalid data returns error changeset", %{
+      user: user,
+      account: account
+    } do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_membership(account, user, @invalid_attrs)
     end
 
     test "update_membership/2 with valid data updates the membership" do
       membership = membership_fixture()
       update_attrs = %{}
 
-      assert {:ok, %Membership{} = _membership} = Accounts.update_membership(membership, update_attrs)
+      assert {:ok, %Membership{} = _membership} =
+               Accounts.update_membership(membership, update_attrs)
     end
 
     test "update_membership/2 with invalid data returns error changeset", %{account: account} do
@@ -184,23 +193,34 @@ defmodule AnotherTest.AccountsTest do
       assert Accounts.get_invitation!(account, invitation.id) == invitation
     end
 
-    test "create_invitation/1 with valid data creates a invitation", %{account: account, user: user} do
+    test "create_invitation/1 with valid data creates a invitation", %{
+      account: account,
+      user: user
+    } do
       valid_attrs = %{accepted_at: ~U[2022-05-05 11:06:00Z], email: "some@email.com"}
 
-      assert {:ok, %Invitation{} = invitation} = Accounts.create_invitation(account, user, valid_attrs)
+      assert {:ok, %Invitation{} = invitation} =
+               Accounts.create_invitation(account, user, valid_attrs)
+
       assert invitation.accepted_at == ~U[2022-05-05 11:06:00Z]
       assert invitation.email == "some@email.com"
     end
 
-    test "create_invitation/1 with invalid data returns error changeset", %{account: account, user: user} do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_invitation(account, user, @invalid_attrs)
+    test "create_invitation/1 with invalid data returns error changeset", %{
+      account: account,
+      user: user
+    } do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_invitation(account, user, @invalid_attrs)
     end
 
     test "update_invitation/2 with valid data updates the invitation" do
       invitation = invitation_fixture()
       update_attrs = %{accepted_at: ~U[2022-05-06 11:06:00Z]}
 
-      assert {:ok, %Invitation{} = invitation} = Accounts.update_invitation(invitation, update_attrs)
+      assert {:ok, %Invitation{} = invitation} =
+               Accounts.update_invitation(invitation, update_attrs)
+
       assert invitation.accepted_at == ~U[2022-05-06 11:06:00Z]
     end
 

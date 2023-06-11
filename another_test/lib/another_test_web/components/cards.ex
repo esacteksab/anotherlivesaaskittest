@@ -7,6 +7,7 @@ defmodule AnotherTestWeb.Components.Cards do
   attr :shadow, :boolean, default: false
   attr :border, :boolean, default: false
   slot :inner_block, required: true
+
   def card(assigns) do
     ~H"""
     <div class={[

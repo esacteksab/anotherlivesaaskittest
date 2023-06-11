@@ -31,8 +31,8 @@ defmodule AnotherTestWeb.AccountLive.Index do
   end
 
   def handle_event("accept-invitation", %{"id" => id}, socket) do
-    invitation = Enum.find(socket.assigns.invitations, & &1.id == id)
-    invitations = Enum.reject(socket.assigns.invitations, & &1.id == id )
+    invitation = Enum.find(socket.assigns.invitations, &(&1.id == id))
+    invitations = Enum.reject(socket.assigns.invitations, &(&1.id == id))
 
     Accounts.update_invitation(invitation, %{accepted_at: DateTime.utc_now()})
     Accounts.create_membership(invitation.account, socket.assigns.current_user)
@@ -41,21 +41,22 @@ defmodule AnotherTestWeb.AccountLive.Index do
   end
 
   def handle_event("decline-invitation", %{"id" => id}, socket) do
-    invitation = Enum.find(socket.assigns.invitations, & &1.id == id)
-    invitations = Enum.reject(socket.assigns.invitations, & &1.id == id )
+    invitation = Enum.find(socket.assigns.invitations, &(&1.id == id))
+    invitations = Enum.reject(socket.assigns.invitations, &(&1.id == id))
 
     Accounts.update_invitation(invitation, %{declined_at: DateTime.utc_now()})
 
     {:noreply, assign(socket, :invitations, invitations)}
   end
 
-  defp get_member_counts(%{accounts: [_|_] = accounts}) do
+  defp get_member_counts(%{accounts: [_ | _] = accounts}) do
     accounts
     |> Accounts.with_members()
     |> Enum.reduce(%{}, fn account, acc ->
       Map.put(acc, account.id, length(account.members))
     end)
   end
+
   defp get_member_counts(_), do: %{}
 
   defp get_open_invitations(user), do: Accounts.list_invitations_for_user(user)

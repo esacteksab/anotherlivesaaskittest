@@ -26,7 +26,10 @@ defmodule AnotherTest.Billing.Stripe.Plan do
     field :trial_period_days, :integer
     field :usage_type, :string
 
-    belongs_to :product, Product, references: :remote_id, foreign_key: :remote_product_id, type: Stringable
+    belongs_to :product, Product,
+      references: :remote_id,
+      foreign_key: :remote_product_id,
+      type: Stringable
 
     timestamps()
   end
@@ -36,8 +39,19 @@ defmodule AnotherTest.Billing.Stripe.Plan do
   @doc false
   def changeset(plan, attrs) do
     plan
-    |> cast(attrs, [:active, :amount, :currency, :interval, :interval_count, :name, :local_name,
-      :remote_id, :remote_product_id, :trial_period_days, :usage_type])
+    |> cast(attrs, [
+      :active,
+      :amount,
+      :currency,
+      :interval,
+      :interval_count,
+      :name,
+      :local_name,
+      :remote_id,
+      :remote_product_id,
+      :trial_period_days,
+      :usage_type
+    ])
     |> validate_required([:remote_id])
     |> unique_constraint(:remote_id, name: :billing_plans_remote_id_index)
   end

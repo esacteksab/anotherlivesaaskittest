@@ -17,18 +17,32 @@ defmodule AnotherTestWeb.Components.Tables do
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
+
   def live_table(assigns) do
     assigns
-    |> assign(opts: [
-      container: true,
-      container_attrs: [id: assigns[:id], class: "relative overflow-x-auto shadow-md sm:rounded-lg"],
-      no_results_content: Phoenix.HTML.Tag.content_tag(:div, "No results.", class: "text-base-content/50 text-3xl font-bold text-center py-12"),
-      table_attrs: [class: "w-full text-sm text-left text-gray-500 dark:text-gray-400"],
-      tbody_tr_attrs: [class: "bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"],
-      tbody_td_attrs: [class: "px-6 py-4"],
-      thead_attrs: [class: "text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"],
-      thead_th_attrs: [class: "px-6 py-3"],
-    ])
+    |> assign(
+      opts: [
+        container: true,
+        container_attrs: [
+          id: assigns[:id],
+          class: "relative overflow-x-auto shadow-md sm:rounded-lg"
+        ],
+        no_results_content:
+          Phoenix.HTML.Tag.content_tag(:div, "No results.",
+            class: "text-base-content/50 text-3xl font-bold text-center py-12"
+          ),
+        table_attrs: [class: "w-full text-sm text-left text-gray-500 dark:text-gray-400"],
+        tbody_tr_attrs: [
+          class:
+            "bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        ],
+        tbody_td_attrs: [class: "px-6 py-4"],
+        thead_attrs: [
+          class: "text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        ],
+        thead_th_attrs: [class: "px-6 py-3"]
+      ]
+    )
     |> Flop.Phoenix.table()
   end
 
@@ -36,6 +50,7 @@ defmodule AnotherTestWeb.Components.Tables do
   attr :fields, :list, required: true
   attr :rule, :string, default: "ilike_and"
   attr :class, :string, default: "pb-4 max-w-sm"
+
   def filter_form(%{meta: meta} = assigns) do
     assigns = assign(assigns, form: Phoenix.Component.to_form(meta), meta: nil)
 
@@ -57,22 +72,35 @@ defmodule AnotherTestWeb.Components.Tables do
 
   attr :path, :any, required: true
   attr :meta, :any, required: true
-  def pagination(assigns) do
-    assigns = assigns
-    |> assign(opts: [
-      disabled_class: "cursor-not-allowed no-underline hover:no-underline text-opacity-50",
-      next_link_attrs: [class: "text-sm font-semibold text-gray-900 dark:text-white"],
-      previous_link_attrs: [class: "text-sm font-semibold text-gray-900 dark:text-white"],
 
-      pagination_link_attrs: [class: "flex items-center"],
-      pagination_list_attrs: [class: "hidden"],
-    ])
+  def pagination(assigns) do
+    assigns =
+      assigns
+      |> assign(
+        opts: [
+          disabled_class: "cursor-not-allowed no-underline hover:no-underline text-opacity-50",
+          next_link_attrs: [class: "text-sm font-semibold text-gray-900 dark:text-white"],
+          previous_link_attrs: [class: "text-sm font-semibold text-gray-900 dark:text-white"],
+          pagination_link_attrs: [class: "flex items-center"],
+          pagination_list_attrs: [class: "hidden"]
+        ]
+      )
+
     ~H"""
     <div :if={@meta.total_count != 0} class="flex flex-col items-center my-4 space-y-4">
       <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-        Showing <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.current_offset + 1 %></span>
-        <span :if={@meta.total_pages != 1}>to <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.next_offset || @meta.total_count %></span></span>
-        of <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.total_count %></span> Entries
+        Showing
+        <span class="font-semibold text-gray-900 dark:text-white">
+          <%= @meta.current_offset + 1 %>
+        </span>
+        <span :if={@meta.total_pages != 1}>
+          to
+          <span class="font-semibold text-gray-900 dark:text-white">
+            <%= @meta.next_offset || @meta.total_count %>
+          </span>
+        </span>
+        of <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.total_count %></span>
+        Entries
       </div>
       <Flop.Phoenix.pagination :if={@meta.total_pages != 1} meta={@meta} path={@path} opts={@opts} />
     </div>

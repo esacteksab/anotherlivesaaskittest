@@ -17,8 +17,9 @@ defmodule CoreSpunk.Features.ForgotPasswordTest do
       |> assert_text("Forgot your password?")
       |> fill_in(@email_field, with: user.email)
       |> click(button("Send password reset instructions"))
-      |> assert_has(css(".alert-info p", text: "you will receive instructions to reset your password "))
-
+      |> assert_has(
+        css(".alert-info p", text: "you will receive instructions to reset your password ")
+      )
 
     assert current_url(session) =~ ~p"/"
   end

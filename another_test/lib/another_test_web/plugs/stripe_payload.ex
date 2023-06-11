@@ -11,6 +11,7 @@ defmodule AnotherTestWeb.Plugs.StripePayload do
     case get_stripe_signature(conn) do
       [] ->
         conn
+
       ["" <> stripe_signature] ->
         {:ok, raw_body, _conn} = read_body(conn)
 

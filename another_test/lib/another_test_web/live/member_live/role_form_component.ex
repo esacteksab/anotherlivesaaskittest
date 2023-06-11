@@ -10,11 +10,7 @@ defmodule AnotherTestWeb.MemberLive.RoleFormComponent do
   def render(assigns) do
     ~H"""
     <span>
-      <.form
-        for={@form}
-        id="member-form-#{@membership.id}"
-        phx-target={@myself}
-        phx-change="save">
+      <.form for={@form} id="member-form-#{@membership.id}" phx-target={@myself} phx-change="save">
         <.input field={@form[:role]} type="select" options={[:owner, :member]} />
       </.form>
     </span>

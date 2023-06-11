@@ -13,13 +13,16 @@ defmodule AnotherTest.Campaigns do
   def active_campaigns do
     [
       ## Insert campaigns below
-      :initial_campaign,
+      :initial_campaign
     ]
   end
 
   # An uns of magic to dynamic find the correct campaign
   def get_campaign_module(:campaign_only_used_in_test), do: AnotherTest.CampaignsTest.TestCampaign
-  def get_campaign_module("campaign_only_used_in_test"), do: AnotherTest.CampaignsTest.TestCampaign
+
+  def get_campaign_module("campaign_only_used_in_test"),
+    do: AnotherTest.CampaignsTest.TestCampaign
+
   def get_campaign_module(campaign_name) do
     path_list = Macro.underscore(__MODULE__)
     Macro.camelize("elixir/#{path_list}/#{campaign_name}") |> String.to_atom()
@@ -94,19 +97,22 @@ defmodule AnotherTest.Campaigns do
   Starts a base user query that can be piped into further conditions.
   """
   def base_users_query do
-    from u in User, as: :user # add permission check here as well
+    # add permission check here as well
+    from u in User, as: :user
   end
 
   @doc """
   Filters out users that are already in a campaign
   """
   def not_in_campaign_query(query, campaign) do
-    in_campaign_subquery = from(
-      m in AnotherTest.Campaigns.Membership,
-      where: m.user_id == parent_as(:user).id,
-      where: m.campaign == ^campaign,
-      select: 1
-    )
+    in_campaign_subquery =
+      from(
+        m in AnotherTest.Campaigns.Membership,
+        where: m.user_id == parent_as(:user).id,
+        where: m.campaign == ^campaign,
+        select: 1
+      )
+
     from u in query,
       where: not exists(in_campaign_subquery)
   end
@@ -115,12 +121,14 @@ defmodule AnotherTest.Campaigns do
   Selects users that are in a campaign
   """
   def in_campaign_query(query, campaign) do
-    in_campaign_subquery = from(
-      m in AnotherTest.Campaigns.Membership,
-      where: m.user_id == parent_as(:user).id,
-      where: m.campaign == ^campaign,
-      select: 1
-    )
+    in_campaign_subquery =
+      from(
+        m in AnotherTest.Campaigns.Membership,
+        where: m.user_id == parent_as(:user).id,
+        where: m.campaign == ^campaign,
+        select: 1
+      )
+
     from u in query,
       where: exists(in_campaign_subquery)
   end
@@ -130,12 +138,14 @@ defmodule AnotherTest.Campaigns do
   received any receipts for the campaign.
   """
   def no_receipts_query(query, campaign) do
-    in_campaign_subquery = from(
-      r in Receipt,
-      where: r.user_id == parent_as(:user).id,
-      where: r.campaign == ^campaign,
-      select: 1
-    )
+    in_campaign_subquery =
+      from(
+        r in Receipt,
+        where: r.user_id == parent_as(:user).id,
+        where: r.campaign == ^campaign,
+        select: 1
+      )
+
     from u in query,
       where: not exists(in_campaign_subquery)
   end
@@ -145,12 +155,13 @@ defmodule AnotherTest.Campaigns do
   less than x number of days ago.
   """
   def days_since_last_receipt_grace_period(query, campaign, days_between_steps) do
-    last_reseipt_for_campaign = from(
-      r in Receipt,
-      where: r.user_id == parent_as(:user).id,
-      where: r.campaign == ^campaign,
-      where: r.inserted_at > ago(^days_between_steps, "day")
-    )
+    last_reseipt_for_campaign =
+      from(
+        r in Receipt,
+        where: r.user_id == parent_as(:user).id,
+        where: r.campaign == ^campaign,
+        where: r.inserted_at > ago(^days_between_steps, "day")
+      )
 
     from u in query,
       where: not exists(last_reseipt_for_campaign)
@@ -161,14 +172,15 @@ defmodule AnotherTest.Campaigns do
   a user have a receipt for.
   """
   def max_step_is_previous_receipts_query(query, campaign, previous_step) do
-    max_step_for_campaign = from(
-      r in Receipt,
-      where: r.user_id == parent_as(:user).id,
-      where: r.campaign == ^campaign,
-      order_by: [desc: :inserted_at],
-      limit: 1,
-      select: r.step
-    )
+    max_step_for_campaign =
+      from(
+        r in Receipt,
+        where: r.user_id == parent_as(:user).id,
+        where: r.campaign == ^campaign,
+        order_by: [desc: :inserted_at],
+        limit: 1,
+        select: r.step
+      )
 
     from u in query,
       where: subquery(max_step_for_campaign) == ^"#{previous_step}"
@@ -315,7 +327,6 @@ defmodule AnotherTest.Campaigns do
   def change_membership(%Membership{} = membership, attrs \\ %{}) do
     Membership.changeset(membership, attrs)
   end
-
 
   @doc """
   Checks if a user has a receipt for campaign and step.

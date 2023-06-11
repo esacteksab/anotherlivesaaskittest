@@ -7,7 +7,7 @@ defmodule AnotherTest.Billing.NormalizeAttributes do
   def to_attrs(%Stripe.Customer{id: id} = customer) do
     %{
       remote_id: id,
-      billing_email: customer.email,
+      billing_email: customer.email
     }
   end
 
@@ -16,7 +16,7 @@ defmodule AnotherTest.Billing.NormalizeAttributes do
       card_brand: card.brand,
       card_exp_month: card.exp_month,
       card_exp_year: card.exp_year,
-      card_last4: card.last4,
+      card_last4: card.last4
     }
   end
 
@@ -29,7 +29,7 @@ defmodule AnotherTest.Billing.NormalizeAttributes do
       current_period_end_at: subscription.current_period_end,
       current_period_start: subscription.current_period_start,
       remote_customer_id: subscription.customer,
-      remote_plan_id: subscription.plan.id,
+      remote_plan_id: subscription.plan.id
     }
   end
 
@@ -44,7 +44,7 @@ defmodule AnotherTest.Billing.NormalizeAttributes do
       interval_count: plan.interval_count,
       usage_type: plan.usage_type,
       trial_period_days: plan.trial_period_days,
-      name: plan.name,
+      name: plan.name
     }
   end
 
@@ -53,7 +53,7 @@ defmodule AnotherTest.Billing.NormalizeAttributes do
       remote_id: id,
       active: product.active,
       name: product.name,
-      description: product.description,
+      description: product.description
     }
   end
 
@@ -64,9 +64,10 @@ defmodule AnotherTest.Billing.NormalizeAttributes do
       status: invoice.status,
       subtotal: invoice.subtotal,
       hosted_invoice_url: invoice.hosted_invoice_url,
-      invoice_pdf: invoice.invoice_pdf,
+      invoice_pdf: invoice.invoice_pdf
     }
   end
 
-  def to_attrs(attrs), do: attrs # fallback
+  # fallback
+  def to_attrs(attrs), do: attrs
 end

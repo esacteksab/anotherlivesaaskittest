@@ -6,6 +6,7 @@ defmodule AnotherTest.Mailer do
       import AnotherTest.Mailer
     end
   end
+
   @moduledoc false
   use Swoosh.Mailer, otp_app: :another_test
   import Swoosh.Email, only: [new: 0, from: 2, html_body: 2, text_body: 2]
@@ -41,7 +42,9 @@ defmodule AnotherTest.Mailer do
   def premail(email) do
     html = Premailex.to_inline_css(email.html_body)
     text = Premailex.to_text(email.html_body)
-    text_with_layout = render_component(AnotherTestWeb.EmailHTML.layout_text(%{inner_content: text}))
+
+    text_with_layout =
+      render_component(AnotherTestWeb.EmailHTML.layout_text(%{inner_content: text}))
 
     email
     |> html_body(html)

@@ -64,7 +64,7 @@ defmodule AnotherTest.UsersTest do
   describe "with_memberships/1" do
     test "with_memberships/1 returns the user with memberships and accounts preloaded" do
       user = user_fixture()
-      assert %User{memberships: [_|_], accounts: [_|_]} = Users.with_memberships(user)
+      assert %User{memberships: [_ | _], accounts: [_ | _]} = Users.with_memberships(user)
     end
   end
 
@@ -117,8 +117,9 @@ defmodule AnotherTest.UsersTest do
       email = unique_user_email()
       {:ok, user} = Users.register_user(valid_user_attributes(email: email))
 
-      assert_enqueued worker: AnotherTest.Billing.CreateCustomerWorker, args: %{id: user.id}
+      assert_enqueued(worker: AnotherTest.Billing.CreateCustomerWorker, args: %{id: user.id})
     end
+
     test "creates the personal account" do
       email = unique_user_email()
       {:ok, user} = Users.register_user(valid_user_attributes(email: email))
@@ -198,8 +199,7 @@ defmodule AnotherTest.UsersTest do
     end
 
     test "validates current password", %{user: user} do
-      {:error, changeset} =
-        Users.apply_user_email(user, "invalid", %{email: unique_user_email()})
+      {:error, changeset} = Users.apply_user_email(user, "invalid", %{email: unique_user_email()})
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end

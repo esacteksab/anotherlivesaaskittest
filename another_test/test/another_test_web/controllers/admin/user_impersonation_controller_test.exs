@@ -9,12 +9,11 @@ defmodule AnotherTestWeb.Admin.UserImpersonationControllerTest do
     test "sets current_user and redirects", %{conn: conn} do
       user = user_fixture()
 
-      conn =
-        post(conn, ~p"/admin/impersonate/#{user.id}", %{})
+      conn = post(conn, ~p"/admin/impersonate/#{user.id}", %{})
 
       assert redirected_to(conn) == ~p"/"
 
-      conn = get(conn,  ~p"/admin")
+      conn = get(conn, ~p"/admin")
       assert html_response(conn, 200) =~ "Impersonating"
     end
   end

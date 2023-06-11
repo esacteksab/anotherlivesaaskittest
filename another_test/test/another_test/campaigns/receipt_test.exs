@@ -91,7 +91,12 @@ defmodule AnotherTest.CampaignsTest do
       five_days_ago = NaiveDateTime.add(now, @one_day_ago * 5)
 
       Campaigns.add_users_to_campaign(@campaign, @test_campaign_module)
-      receipt_fixture(user, %{inserted_at: five_days_ago, campaign: :campaign_only_used_in_test, step: :first})
+
+      receipt_fixture(user, %{
+        inserted_at: five_days_ago,
+        campaign: :campaign_only_used_in_test,
+        step: :first
+      })
 
       # run campaign steps and check if user was scheduled
       Campaigns.run_steps_for_campaign(@campaign, @test_campaign_module)
@@ -103,21 +108,37 @@ defmodule AnotherTest.CampaignsTest do
       eight_days_ago = NaiveDateTime.add(now, @one_day_ago * 8)
 
       Campaigns.add_users_to_campaign(@campaign, @test_campaign_module)
-      receipt_fixture(user, %{inserted_at: eight_days_ago, campaign: :campaign_only_used_in_test, step: :first})
+
+      receipt_fixture(user, %{
+        inserted_at: eight_days_ago,
+        campaign: :campaign_only_used_in_test,
+        step: :first
+      })
 
       # run campaign steps and check if user was scheduled
       Campaigns.run_steps_for_campaign(@campaign, @test_campaign_module)
       assert [%{args: %{"step" => "second"}}] = all_enqueued(worker: ExecuteStepWorker)
     end
 
-    test "does not execute the step for campaign when it has gone more than 7 days but user has receipt for step", %{user: user} do
+    test "does not execute the step for campaign when it has gone more than 7 days but user has receipt for step",
+         %{user: user} do
       now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       nine_days_ago = NaiveDateTime.add(now, @one_day_ago * 9)
       eight_days_ago = NaiveDateTime.add(now, @one_day_ago * 8)
 
       Campaigns.add_users_to_campaign(@campaign, @test_campaign_module)
-      receipt_fixture(user, %{inserted_at: nine_days_ago, campaign: :campaign_only_used_in_test, step: :first})
-      receipt_fixture(user, %{inserted_at: eight_days_ago, campaign: :campaign_only_used_in_test, step: :second})
+
+      receipt_fixture(user, %{
+        inserted_at: nine_days_ago,
+        campaign: :campaign_only_used_in_test,
+        step: :first
+      })
+
+      receipt_fixture(user, %{
+        inserted_at: eight_days_ago,
+        campaign: :campaign_only_used_in_test,
+        step: :second
+      })
 
       # run campaign steps and check if user was scheduled
       Campaigns.run_steps_for_campaign(@campaign, @test_campaign_module)
@@ -157,7 +178,9 @@ defmodule AnotherTest.CampaignsTest do
       membership = membership_fixture(user)
       update_attrs = %{campaign: :onboarding, last_sent_at: ~N[2022-11-14 06:49:00], step: :two}
 
-      assert {:ok, %Membership{} = membership} = Campaigns.update_membership(membership, update_attrs)
+      assert {:ok, %Membership{} = membership} =
+               Campaigns.update_membership(membership, update_attrs)
+
       assert membership.campaign == :onboarding
       assert membership.last_sent_at == ~N[2022-11-14 06:49:00]
       assert membership.step == :two
@@ -198,9 +221,10 @@ defmodule AnotherTest.CampaignsTest do
       receipt_fixture(user, %{campaign: :other_campaign, step: :one})
 
       assert Campaigns.get_last_steps(user, :wrong) == []
+
       assert [
-        %{inserted_at: _, step: :two}
-      ] = Campaigns.get_last_steps(user, :some_campaign)
+               %{inserted_at: _, step: :two}
+             ] = Campaigns.get_last_steps(user, :some_campaign)
     end
 
     test "create_receipt/1 with valid data creates a receipt", %{user: user} do
@@ -211,7 +235,7 @@ defmodule AnotherTest.CampaignsTest do
       assert receipt.step == :some_step
     end
 
-     @invalid_attrs %{campaign: nil, step: nil}
+    @invalid_attrs %{campaign: nil, step: nil}
 
     test "create_receipt/1 with invalid data returns error changeset", %{user: user} do
       assert {:error, %Ecto.Changeset{}} = Campaigns.create_receipt(user, @invalid_attrs)

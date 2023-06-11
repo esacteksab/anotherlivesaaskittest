@@ -53,6 +53,7 @@ defmodule AnotherTestWeb.Admin.AdminLive.Index do
     case Admins.paginate_admins(socket.assigns.params) do
       {:ok, {admins, meta}} ->
         assign(socket, %{admins: admins, meta: meta})
+
       _ ->
         push_navigate(socket, to: ~p"/admin/admins")
     end

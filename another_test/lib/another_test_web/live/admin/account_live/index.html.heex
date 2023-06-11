@@ -7,7 +7,9 @@
 
 <.live_table id="accounts" items={@accounts} meta={@meta} path={~p"/admin/accounts"}>
   <:col :let={account} label="Name" field={:name}><%= account.name %></:col>
-  <:col :let={account} label="Created" field={:inserted_at}><%= Calendar.strftime account.inserted_at, "%x" %></:col>
+  <:col :let={account} label="Created" field={:inserted_at}>
+    <%= Calendar.strftime(account.inserted_at, "%x") %>
+  </:col>
   <:action :let={account}>
     <.link navigate={~p"/admin/accounts/#{account}"} class="link link-primary">Show</.link>
   </:action>

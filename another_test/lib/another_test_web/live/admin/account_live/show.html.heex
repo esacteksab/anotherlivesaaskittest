@@ -29,8 +29,18 @@
       </.list>
 
       <div class="text-sm border-t mt-2 pt-2 border-gray-200 dark:border-gray-800">
-        <.link patch={~p"/admin/accounts/#{@account}/show/edit"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</.link>
-        <.link navigate={~p"/admin/accounts"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Back</.link>
+        <.link
+          patch={~p"/admin/accounts/#{@account}/show/edit"}
+          class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+        >
+          Edit
+        </.link>
+        <.link
+          navigate={~p"/admin/accounts"}
+          class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+        >
+          Back
+        </.link>
       </div>
     </.card>
 

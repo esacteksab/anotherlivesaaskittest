@@ -11,7 +11,7 @@ defmodule AnotherTest.DailyReports do
   # {"accounts", :inserted_at},
   defp aggregators do
     [
-      {AnotherTest.Users.User, :inserted_at},
+      {AnotherTest.Users.User, :inserted_at}
     ]
   end
 

@@ -10,12 +10,7 @@ defmodule AnotherTestWeb.Admin.SettingLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.simple_form
-        for={@form}
-        id={@id}
-        phx-target={@myself}
-        phx-submit="save"
-      >
+      <.simple_form for={@form} id={@id} phx-target={@myself} phx-submit="save">
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:email]} type="text" label="Email" />
 

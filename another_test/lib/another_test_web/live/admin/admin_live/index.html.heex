@@ -5,7 +5,13 @@
   <.button phx-click={JS.patch(~p"/admin/admins/new")}>New Admin</.button>
 </.admin_page_heading>
 
-<.live_table id="admins" items={@admins} meta={@meta} path={~p"/admin/admins"} row_click={&JS.navigate(~p"/admin/admins/#{&1}")}>
+<.live_table
+  id="admins"
+  items={@admins}
+  meta={@meta}
+  path={~p"/admin/admins"}
+  row_click={&JS.navigate(~p"/admin/admins/#{&1}")}
+>
   <:col :let={admin} label="Name" field={:name}><%= admin.name %></:col>
   <:col :let={admin} label="Email" field={:email}><%= admin.email %></:col>
   <:action :let={admin}>

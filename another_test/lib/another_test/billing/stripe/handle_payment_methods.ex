@@ -7,6 +7,7 @@ defmodule AnotherTest.Billing.Stripe.HandlePaymentMethods do
   alias AnotherTest.Billing.Stripe.Customer
 
   def add_card_info(%{customer: nil}), do: nil
+
   def add_card_info(%{customer: remote_id} = payment_method) do
     if customer = Billing.get_record(Customer, remote_id) do
       Billing.update_customer(customer, payment_method)
@@ -14,6 +15,7 @@ defmodule AnotherTest.Billing.Stripe.HandlePaymentMethods do
   end
 
   def remove_card_info(%{customer: nil}), do: nil
+
   def remove_card_info(%{customer: remote_id}) do
     if customer = Billing.get_record(Customer, remote_id) do
       Billing.update_customer(customer, %{

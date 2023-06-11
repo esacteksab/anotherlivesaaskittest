@@ -2,7 +2,7 @@ defmodule AnotherTest.Campaigns.Campaign do
   @moduledoc """
   The Campaign Macro.
   """
-  @type query :: Ecto.Query.t
+  @type query :: Ecto.Query.t()
 
   @callback apply_scopes(query) :: query
 

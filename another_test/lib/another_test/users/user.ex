@@ -7,7 +7,7 @@ defmodule AnotherTest.Users.User do
   @derive {
     Flop.Schema,
     default_limit: 20,
-    filterable: [:email, :confirmed_at,  :inserted_at],
+    filterable: [:email, :confirmed_at, :inserted_at],
     sortable: [:email, :confirmed_at, :inserted_at]
   }
   schema "users" do

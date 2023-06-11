@@ -17,8 +17,7 @@ defmodule AnotherTest.Billing do
   @schemas [Customer, Subscription, Plan, Product, Invoice]
 
   def list_products_and_plans_for_pricing_page(interval \\ "month") do
-    (
-      from p in Plan,
+    from(p in Plan,
       join: pr in assoc(p, :product),
       preload: [:product],
       where: pr.active == true,
@@ -152,6 +151,7 @@ defmodule AnotherTest.Billing do
         schema.new()
         |> schema.changeset(attrs)
         |> Repo.insert()
+
       record ->
         record
         |> schema.changeset(attrs)
@@ -276,8 +276,7 @@ defmodule AnotherTest.Billing do
 
   def get_billing_customer_for_account(account) do
     membership =
-      (
-        from m in Membership,
+      from(m in Membership,
         where: m.account_id == ^account.id,
         where: m.billing_customer == true
       )

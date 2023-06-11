@@ -25,17 +25,32 @@ defmodule AnotherTest.AdminsTest do
     end
 
     test "create_admin/1 validates email and password when given" do
-      {:error, changeset} = Admins.create_admin(%{email: "not valid", password: "invalid", password_confirmation: "invalid"})
+      {:error, changeset} =
+        Admins.create_admin(%{
+          email: "not valid",
+          password: "invalid",
+          password_confirmation: "invalid"
+        })
 
       assert %{
                email: ["must have the @ sign and no spaces"],
-               password: ["at least one digit or punctuation character", "should be at least 8 character(s)"]
+               password: [
+                 "at least one digit or punctuation character",
+                 "should be at least 8 character(s)"
+               ]
              } = errors_on(changeset)
     end
 
     test "create_admin/1 validates maximum values for email and password for security" do
       too_long = String.duplicate("db", 100)
-      {:error, changeset} = Admins.create_admin(%{email: too_long, password: too_long, password_confirmation: too_long})
+
+      {:error, changeset} =
+        Admins.create_admin(%{
+          email: too_long,
+          password: too_long,
+          password_confirmation: too_long
+        })
+
       assert "should be at most 160 character(s)" in errors_on(changeset).email
       assert "should be at most 80 character(s)" in errors_on(changeset).password
     end
@@ -52,7 +67,14 @@ defmodule AnotherTest.AdminsTest do
 
     test "create_admin/1 registers admins with a hashed password" do
       email = unique_admin_email()
-      {:ok, admin} = Admins.create_admin(%{email: email, password: valid_admin_password(), password_confirmation: valid_admin_password()})
+
+      {:ok, admin} =
+        Admins.create_admin(%{
+          email: email,
+          password: valid_admin_password(),
+          password_confirmation: valid_admin_password()
+        })
+
       assert admin.email == email
       assert is_binary(admin.password_hash)
       assert is_nil(admin.password)
@@ -68,7 +90,13 @@ defmodule AnotherTest.AdminsTest do
     test "update_admin/2 with valid password data updates the admin password" do
       admin = admin_fixture()
       password = "supersecret123"
-      update_attrs = %{email: "joe@example.com", password: password, password_confirmation: password}
+
+      update_attrs = %{
+        email: "joe@example.com",
+        password: password,
+        password_confirmation: password
+      }
+
       assert {:ok, %Admin{} = admin} = Admins.update_admin(admin, update_attrs)
       assert admin.email == "joe@example.com"
       assert {:ok, %Admin{}} = Admins.Auth.authenticate_admin(admin.email, password)

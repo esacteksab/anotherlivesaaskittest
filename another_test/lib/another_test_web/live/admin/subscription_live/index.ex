@@ -26,6 +26,7 @@ defmodule AnotherTestWeb.Admin.SubscriptionLive.Index do
     case Billing.paginate_subscriptions(params) do
       {:ok, {subscriptions, meta}} ->
         assign(socket, %{subscriptions: subscriptions, meta: meta})
+
       _ ->
         push_navigate(socket, to: ~p"/admin/subscriptions")
     end
@@ -33,5 +34,5 @@ defmodule AnotherTestWeb.Admin.SubscriptionLive.Index do
 
   defp human_date(datetime), do: human_date(datetime, "%x")
   defp human_date(nil, _), do: nil
-  defp human_date(datetime, format), do: Calendar.strftime datetime, format
+  defp human_date(datetime, format), do: Calendar.strftime(datetime, format)
 end

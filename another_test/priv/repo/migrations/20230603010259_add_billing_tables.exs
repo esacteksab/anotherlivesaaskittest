@@ -2,7 +2,6 @@ defmodule AnotherTest.Repo.Migrations.AddBillingTables do
   use Ecto.Migration
 
   def change do
-
     ## Users
 
     alter table(:users) do
@@ -101,6 +100,8 @@ defmodule AnotherTest.Repo.Migrations.AddBillingTables do
     # Only allow one billing customer per account
     # If you want to change this. Remove this line before migrations or make a migration that reverses this.
     # name of the index: account_memberships_account_id_billing_customer_index
-    create unique_index(:account_memberships, [:account_id, :billing_customer], where: "billing_customer = true")
+    create unique_index(:account_memberships, [:account_id, :billing_customer],
+             where: "billing_customer = true"
+           )
   end
 end

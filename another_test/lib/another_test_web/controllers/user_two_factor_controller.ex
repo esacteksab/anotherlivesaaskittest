@@ -13,6 +13,7 @@ defmodule AnotherTestWeb.UserTwoFactorController do
         conn
         |> put_session(:confirm_2fa_setup, "true")
         |> redirect(to: user_return_to || ~p"/")
+
       _ ->
         conn
         |> redirect(to: ~p"/")

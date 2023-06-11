@@ -14,7 +14,8 @@ defmodule AnotherTest.BillingFixtures do
   alias AnotherTest.Billing.Stripe.Subscription
   alias AnotherTest.Billing.Stripe.Invoice
 
-  def unique_remote_id(prefix \\ "foo"), do: "#{prefix}_#{:crypto.strong_rand_bytes(12) |> Base.encode16(case: :lower)}"
+  def unique_remote_id(prefix \\ "foo"),
+    do: "#{prefix}_#{:crypto.strong_rand_bytes(12) |> Base.encode16(case: :lower)}"
 
   def stripe_customer_data(attrs \\ %{}) do
     %Stripe.Customer{
@@ -52,7 +53,7 @@ defmodule AnotherTest.BillingFixtures do
       currency: "usd",
       deleted: nil,
       interval: "month",
-      interval_count: 1,
+      interval_count: 1
     }
     |> Map.merge(attrs)
   end
@@ -103,7 +104,7 @@ defmodule AnotherTest.BillingFixtures do
         brand: "visa",
         exp_month: 5,
         exp_year: 2035,
-        last4: "4242",
+        last4: "4242"
       },
       customer: unique_remote_id("cus"),
       type: "card"
