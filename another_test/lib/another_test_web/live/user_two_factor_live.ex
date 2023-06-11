@@ -20,11 +20,18 @@ defmodule AnotherTestWeb.UserTwoFactorLive do
         </p>
       <% end %>
 
-      <.simple_form :let={f} for={%{}} as={:user} id="verify-2fa-auth" phx-click="verify">
-        <.input field={{f, :verification}} name="challenge" value="" type="text" required />
+      <!-- <.simple_form for={%{}} as={:user} id="verify-2fa-auth" value={:verification}>
+        <.input field={{:verification}} name="verification" type="input" required />
         <:actions>
-          <.button class="w-full" phx-disable-with="Sending...">Verify</.button>
+          <button class="w-full" phx-disable-with="Sending..." phx-click="verify">Verify</.button>
         </:actions>
+      </.simple_form> -->
+
+      <.simple_form for={@form} id="verify-2fa-auth" phx-update="ignore">
+      <.input field={@form[:verification]} type="input" required />
+      <:actions>
+            <.button phx-disable-with="Verifying..." class="w-full">Verify</.button>
+      </:actions>
       </.simple_form>
     </div>
     """
@@ -32,14 +39,17 @@ defmodule AnotherTestWeb.UserTwoFactorLive do
 
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
+    verification = live_flash(socket.assigns.flash, :verification)
+    form = to_form(%{"verification" => verification}, as: "user")
 
     if user.data && user.data.has_two_factor_auth_setup do
-      {:ok, assign(socket, :has_setup, true)}
+      {:ok, assign(socket, :has_setup, true )}
     else
       {
         :ok,
         socket
         |> assign(:has_setup, false)
+        |> assign(:form, form)
         |> assign(:url, Users.generate_authenticator_url(user))
       }
     end
@@ -63,8 +73,7 @@ defmodule AnotherTestWeb.UserTwoFactorLive do
         :noreply,
         socket
         |> put_flash(:info, "The two factor authentication is setup!")
-        #|> redirect(to: ~p"/users/two_factor/#{token}")
-        |> redirect(to: ~p"/users/settings")
+        |> redirect(to: ~p"/users/two_factor/#{token}")
       }
     else
       {
