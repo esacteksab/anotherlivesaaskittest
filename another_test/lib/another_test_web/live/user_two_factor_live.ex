@@ -20,8 +20,8 @@ defmodule AnotherTestWeb.UserTwoFactorLive do
         </p>
       <% end %>
 
-      <.simple_form :let={f} for={:user} id="verify-2fa-auth" phx-submit="verify">
-        <.input field={{f, :verification}} type="text" required />
+      <.simple_form :let={f} for={%{}} as={:user} id="verify-2fa-auth" phx-click="verify">
+        <.input field={{f, :verification}} name="challenge" value="" type="text" required />
         <:actions>
           <.button class="w-full" phx-disable-with="Sending...">Verify</.button>
         </:actions>
@@ -63,7 +63,8 @@ defmodule AnotherTestWeb.UserTwoFactorLive do
         :noreply,
         socket
         |> put_flash(:info, "The two factor authentication is setup!")
-        |> redirect(to: ~p"/users/two_factor/#{token}")
+        #|> redirect(to: ~p"/users/two_factor/#{token}")
+        |> redirect(to: ~p"/users/settings")
       }
     else
       {
